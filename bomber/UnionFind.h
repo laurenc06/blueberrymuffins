@@ -13,7 +13,7 @@ class UnionFind {
     public: 
         UnionFind();
         void insert(int x, Map::Node point);
-        int find(int a);
+        int find(int x);
         void unite(int a, int b);
         void connectPoints();
 };

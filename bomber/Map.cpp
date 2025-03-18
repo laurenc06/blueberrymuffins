@@ -144,14 +144,14 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         if (thisType == '.' || thisType == '*') {
             canVisit = true;
             if (thisType == '*') {
-                newBombState = true;
+                newBombState = current;
             }
         }
         else if (thisType = '#') {
             if (current.bombs > 0) {
                 if (ourUF.shouldbomb(current.lat, current.lng, neighborY, neighborX, dst)) {
                     canVisit = true;
-                    newBombState 
+                    newBombState = false;
                 }
             }
         }
