@@ -2,11 +2,11 @@
 using namespace std;
 
 class UnionFind {
-    vector<Node*> parents;
+    vector<int> parents;
 
     public: 
         UnionFind () {
-
+            
         }
 
         Node* find() {
