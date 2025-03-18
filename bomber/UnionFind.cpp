@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "UnionFind.h"
 
 UnionFind::UnionFind()
@@ -37,3 +38,25 @@ void UnionFind::connectPoints()
 //add after line 45 in Map.cpp
 //(UnionFindObjName).insert(ins,Point(y,x))
 //increment ins after every insert
+=======
+#include <vector>
+using namespace std;
+
+class UnionFind {
+    vector<int> parents;
+
+    public: 
+        UnionFind () {
+            
+        }
+
+        Node* find() {
+    
+        }
+
+        void union(Node* parent1, Node* parent2) {
+            
+        }
+
+}
+>>>>>>> 0676f1bc57452a3fc4ffa8609095c6b10840e182
