@@ -4,9 +4,14 @@ UnionFind::UnionFind()
 {
 }
 
-void UnionFind::insert(int x, Map::Node point)
+void UnionFind::setCols(int c)
 {
-    points[x] = point;
+    cols = c;
+}
+
+void UnionFind::insert(Map::Node point, int x)
+{
+    points[point] = x;
     parents.push_back(x);
     visited.push_back(false);
 }
@@ -27,15 +32,21 @@ void UnionFind::unite(int a, int b)
     return;
 }
 
-void UnionFind::connectPoints()
+void UnionFind::connectPoints(Map::Node point)
+{
+    while(point.y >= 0 && point.x >= 0 && point.type != '~' && point.type != '#')
+    {
+        unite(points[point], (points[point])+1); //unite w east neighbor
+        unite(points[point], (points[point])-1); //unite w west neighbor
+        unite(points[point], (points[point])-cols); //unite w north neighbor
+        unite(points[point], (points[point])+cols); //unite w south neighbor
+    }
+}
+
+void UnionFind::connectAll()
 {
     if(points.size()==0)
         return;
-    Map::Node current = points[0];
-    while(current.y >= 0 && current.x >= 0 && current.type != '~' && current.type != '#')
-    {
-
-    }
 }
 
 //add new var to count ins
