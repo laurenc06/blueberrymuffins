@@ -14,10 +14,16 @@ Map::Node::Node(char c, int yc, int xc) {
 Map::~Map() {
     for (int i =0; i < rows; ++i) {
         delete[] arr[i];
+    }
+    delete[] arr;
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; i < columns; ++j) {
+            delete[] visited[i][j];
+        }
         delete[] visited[i];
     }
     delete[] visited;
-    delete[] arr;
 
     columns = 0;
     rows = 0;
@@ -63,7 +69,7 @@ std::string Map::route(Point src, Point dst) {
         initialBomb = 1;
     }
     
-    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> pq{CompareStates(fin)};
+    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> pq(CompareStates(SearchState(dst.lat, dst.lng, 0, "")));
 
     // reset
     for (int i = 0; i < rows; i++) {
@@ -95,7 +101,7 @@ std::string Map::route(Point src, Point dst) {
 
     while (!pq.empty()) {
         // last = current;
-        State current = pq.top();
+        SearchState current = pq.top();
         // current = pq.top();
         pq.pop();
 
@@ -105,10 +111,10 @@ std::string Map::route(Point src, Point dst) {
         // else if (current.lng < last.lng) { myRoute += "w"; }
 
         if (current.lat == dst.lat && current.lng == dst.lng) {
-            return current.myroute;
+            return current.route;
             // return myRoute;
         }
-        neighbors(current, pq);
+        neighbors(current, dst, pq);
     }
     throw RouteError(src, dst);
 }
@@ -144,15 +150,26 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         if (thisType == '.' || thisType == '*') {
             canVisit = true;
             if (thisType == '*') {
-                newBombState = current;
+                newBombState += 1;
             }
         }
         else if (thisType = '#') {
             if (current.bombs > 0) {
-                if (ourUF.shouldbomb(current.lat, current.lng, neighborY, neighborX, dst)) {
+                if (uf.shouldbomb(current.lat, current.lng, neighborY, neighborX, dst)) { 
                     canVisit = true;
-                    newBombState = false;
+                    newBombState -= 1;
                 }
+            }
+        }
+        else if (thisType == '~') {
+            continue;
+        }
+        if (canVisit) {
+            int BombIndex = newBombState;
+            if (!visited[neighborY][neighborX][BombIndex]) {
+                SearchState next(neighborY, neighborX, newBombState, current.route+nextStep);
+                pq.push(next);
+                visited[neighborY][neighborX][BombIndex] = true;
             }
         }
     }

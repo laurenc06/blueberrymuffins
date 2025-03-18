@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <queue>
-// #include <stack>
 #include <vector>
 #include <cmath>
 #include "Point.h"
@@ -45,9 +44,7 @@ class Map {
     struct CompareStates {
         SearchState destination;
     
-        CompareStates(const SearchState &fin)  {
-            destination = fin;
-        }
+        CompareStates(const SearchState &fin) : destination(fin) {};
 
         float distance(const SearchState &current) const { 
             float distance;
@@ -70,6 +67,8 @@ public:
     Node** arr;
     bool*** visited;
     int columns, rows;
+
+    UnionFind uf;
 
     Point fin;
 
