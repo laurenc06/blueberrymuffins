@@ -140,12 +140,12 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         else if (cellType == '~') {
             continue;
         }
+
         if (canVisit) {
-            int BombIndex = newBombCount;
-            if (!visitedStates[neighborY][neighborX][BombIndex]) {
+            if (!visitedStates[neighborY][neighborX][newBombCount]) {
                 SearchState next(neighborY, neighborX, newBombCount, current.route+nextStep);
                 stateQueue.push(next);
-                visitedStates[neighborY][neighborX][BombIndex] = true;
+                visitedStates[neighborY][neighborX][newBombCount] = true;
             }
         }
     }

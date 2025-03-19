@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <map>
-#include "Node.cpp"
+#include "Node.h"
 #include "Point.h"
 
 using namespace std;

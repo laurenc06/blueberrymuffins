@@ -7,8 +7,8 @@
 #include <vector>
 #include <cmath>
 #include "Point.h"
-#include "UnionFind.cpp"
-#include "Node.cpp"
+#include "UnionFind.h"
+#include "Node.h"
 
 static const int dr[] = {-1, 1, 0, 0};
 static const int dc[] = {0, 0, 1, -1};

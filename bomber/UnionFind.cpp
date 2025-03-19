@@ -53,7 +53,7 @@ void UnionFind::connectAll()
 {
     if (points.size()==0)
         return;
-    for(int i=0; i<parents.size(); i++) //iterate through parents (0 to 1-#ofpointsingrid)
+    for(int i=0; i< static_cast<int>(parents.size()); i++) //iterate through parents (0 to 1-#ofpointsingrid)
     {
         while(!visited[i] && (points[i]).type != '~' && (points[i]).type != '#') //while the current point is NOT visited, it's not a ~ or #
             connectPoints(i); //call connectPoints on that point
