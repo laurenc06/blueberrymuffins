@@ -1,7 +1,8 @@
 class Node {
-    char type;
-    int y;
-    int x;
+    public: 
+        char type;
+        int y;
+        int x;
 
     Node(){}
 
