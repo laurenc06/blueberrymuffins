@@ -1,4 +1,4 @@
-struct Node {
+class Node {
     char type;
     int y;
     int x;
@@ -9,6 +9,12 @@ struct Node {
         type = c; // #, ~, ., *
         y = yc;
         x = xc;
+    }
+
+    Node(Node& other) {
+        type = other.type;
+        y = other.y;
+        x = other.x;
     }
     
     // ~Node();
