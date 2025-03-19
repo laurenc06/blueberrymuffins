@@ -22,5 +22,5 @@ class UnionFind {
         void connectPoints(int index);
         void connectAll();
 
-        bool shouldBomb(int y, int x, int ny, int nx, Point end);
+        bool shouldBomb(Map::Node current, Map::Node neighbor, Map::Node end);
 };

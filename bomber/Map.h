@@ -64,8 +64,8 @@ public:
     Map(std::istream& stream);
     ~Map();
 
-    Node** arr;
-    bool*** visited;
+    Node** grid;
+    bool*** visitedStates;
     int columns, rows;
 
     UnionFind uf;
