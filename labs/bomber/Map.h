@@ -56,7 +56,7 @@ public:
     ~Map();
 
     Node** grid;
-    bool*** visitedStates;
+    // bool*** visitedStates;
     int columns, rows;
 
     UnionFind uf;

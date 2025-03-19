@@ -6,6 +6,8 @@ class Node {
         char type;
         int y;
         int x;
+        bool visited = false;
+        int prevBombCount = 0;
 
     Node(){}
 
@@ -19,6 +21,8 @@ class Node {
         type = other.type;
         y = other.y;
         x = other.x;
+        visited = other.visited;
+        prevBombCount = other.prevBombCount;
     }
 
     Node& operator=(const Node& other) {
@@ -26,6 +30,8 @@ class Node {
             type = other.type;
             y = other.y;
             x = other.x;
+            visited = other.visited;
+            prevBombCount = other.prevBombCount;
         }
         return *this;
     }
