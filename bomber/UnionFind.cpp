@@ -65,7 +65,7 @@ int UnionFind::findIndex(Node current)
 {
     for (const auto& point: points)
     {
-        Node temp = point.second;
+        Node temp = Node(point.second);
         if(current.type == temp.type && current.y == temp.y && current.x == temp.x)
         {
             int key = point.first;
