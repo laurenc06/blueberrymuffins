@@ -9,9 +9,9 @@ void UnionFind::setCols(int c)
     cols = c;
 }
 
-void UnionFind::insert(Map::Node point, int x)
+void UnionFind::insert(int x, Map::Node point)
 {
-    points[point] = x;
+    points[x] = point;
     parents.push_back(x);
     visited.push_back(false);
 }
@@ -32,14 +32,19 @@ void UnionFind::unite(int a, int b)
     return;
 }
 
-void UnionFind::connectPoints(Map::Node point)
+void UnionFind::connectPoints(int index)
 {
-    while(point.y >= 0 && point.x >= 0 && point.type != '~' && point.type != '#')
+    while((points[index]).y >= 0 && (points[index]).x >= 0 && (points[index]).type != '~' && (points[index]).type != '#')
     {
-        unite(points[point], (points[point])+1); //unite w east neighbor
-        unite(points[point], (points[point])-1); //unite w west neighbor
-        unite(points[point], (points[point])-cols); //unite w north neighbor
-        unite(points[point], (points[point])+cols); //unite w south neighbor
+        //call connectPoints for all of the neighbors
+        connectPoints(index+1);
+        connectPoints(index-1);
+        connectPoints(index-cols);
+        connectPoints(index+cols);
+        unite(index, index+1); //unite w east neighbor
+        unite(index, index-1); //unite w west neighbor
+        unite(index, index-cols); //unite w north neighbor
+        unite(index, index+cols); //unite w south neighbor
     }
 }
 
@@ -47,9 +52,15 @@ void UnionFind::connectAll()
 {
     if(points.size()==0)
         return;
+    for(int i=0; i<parents.size(); i++) //iterate through parents (0 to 1-#ofpointsingrid)
+    {
+        while(!visited[i] && (points[i]).type != '~' && (points[i]).type != '#') //while the current point is NOT visited, it's not a ~ or #
+            connectPoints(i); //call connectPoints on that point
+    }
 }
 
-//add new var to count ins
-//add after line 45 in Map.cpp
+//IN MAP.CPP
+//must setCols somewhere
+//add new var to plug in as a param for insert function
 //(UnionFindObjName).insert(ins,Node(type,y,x))
 //increment ins after every insert
