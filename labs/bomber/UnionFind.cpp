@@ -110,6 +110,5 @@ bool UnionFind::shouldBomb(Node current, Node neighbor, Node end) {
 }
 
 //IN MAP.CPP
-//must setCols somewhere
 //add new var to plug in 
 //increment ins after every insert

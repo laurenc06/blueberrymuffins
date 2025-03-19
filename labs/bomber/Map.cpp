@@ -56,15 +56,14 @@ Map::Map(std::istream& stream) {
         // }
     }
 
+    uf.setCols(columns);
+    int insertIndex = 0;
     for (int y = 0; y < rows; y++) {
         for (int x = 0; x < columns; x++) {
             grid[y][x] = Node(lines[y][x], y, x);
+            uf.insert(insertIndex, Node(lines[y][x],y,x));
         }
     }
-
-    uf.setCols(columns);
-
-    // loop over every cell and call uf.insert
 }
 
 std::string Map::route(Point src, Point dst) {
