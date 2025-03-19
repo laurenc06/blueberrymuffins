@@ -4,18 +4,26 @@
 // Member Functions
 
 Map::~Map() {
-    for (int i = 0; i < rows; ++i) {
-        delete[] grid[i];
-    }
-    delete[] grid;
-
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; i < columns; ++j) {
-            delete[] visitedStates[i][j];
+    if (grid) {
+        for (int i = 0; i < rows; ++i) {
+            delete[] grid[i];
         }
-        delete[] visitedStates[i];
+        delete[] grid;
+        grid = nullptr;
     }
-    delete[] visitedStates;
+
+    if (visitedStates) {
+        for (int i = 0; i < rows; ++i) {
+            if (visitedStates[i]) {
+                for (int j = 0; i < columns; ++j) {
+                    delete[] visitedStates[i][j];
+                }
+                delete[] visitedStates[i];
+            }
+        }
+        delete[] visitedStates;
+        visitedStates = nullptr;
+    }
 
     columns = 0;
     rows = 0;
@@ -38,7 +46,7 @@ Map::Map(std::istream& stream) {
 
     for (int i = 0; i < rows; i++) {
         grid[i] = new Node[columns];
-        visitedStates[i] = new bool*[columns]();
+        visitedStates[i] = new bool*[columns];
         for (int j = 0; j < columns; j++) {
             visitedStates[i][j] = new bool[2];
             visitedStates[i][j][0] = false; // represents bomb used state
