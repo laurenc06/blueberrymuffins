@@ -8,15 +8,15 @@ using namespace std;
 class UnionFind {
     vector<int> parents;
     vector<bool> visited;
-    map<Map::Node,int> points;
+    map<int,Map::Node> points;
     int cols; //# of columns
 
     public: 
         UnionFind();
         void setCols(int c);
-        void insert(Map::Node point, int x);
+        void insert(int x, Map::Node point);
         int find(int x);
         void unite(int a, int b);
-        void connectPoints(Map::Node point);
+        void connectPoints(int index);
         void connectAll();
 };
