@@ -19,4 +19,6 @@ class UnionFind {
         void unite(int a, int b);
         void connectPoints(int index);
         void connectAll();
+
+        bool shouldBomb(int y, int x, int ny, int nx, Point end);
 };

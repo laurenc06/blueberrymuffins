@@ -14,10 +14,16 @@ Map::Node::Node(char c, int yc, int xc) {
 Map::~Map() {
     for (int i =0; i < rows; ++i) {
         delete[] arr[i];
+    }
+    delete[] arr;
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; i < columns; ++j) {
+            delete[] visited[i][j];
+        }
         delete[] visited[i];
     }
     delete[] visited;
-    delete[] arr;
 
     columns = 0;
     rows = 0;
@@ -63,7 +69,7 @@ std::string Map::route(Point src, Point dst) {
         initialBomb = 1;
     }
     
-    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> pq{CompareStates(fin)};
+    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> pq(CompareStates(SearchState(dst.lat, dst.lng, 0, "")));
 
     // reset
     for (int i = 0; i < rows; i++) {
@@ -82,33 +88,20 @@ std::string Map::route(Point src, Point dst) {
 
     SearchState start(src.lat, src.lng, initialBomb, "");
     pq.push(start);
-    // Point current, last;
-    // std::string myRoute = "";
-
-    // pq.push(src);
+    
     visited[src.lat][src.lng][0] = true;
     if (initialBomb > 0) {
         visited[src.lat][src.lng][1] = true; // true or false
     }
 
-    // current = src;
-
     while (!pq.empty()) {
-        // last = current;
-        State current = pq.top();
-        // current = pq.top();
+        SearchState current = pq.top();
         pq.pop();
 
-        // if (current.lat > last.lat) { myRoute += "s"; }
-        // else if (current.lat  <last.lat) { myRoute += "n"; }
-        // else if (current.lng > last.lng) { myRoute += "e"; }
-        // else if (current.lng < last.lng) { myRoute += "w"; }
-
         if (current.lat == dst.lat && current.lng == dst.lng) {
-            return current.myroute;
-            // return myRoute;
+            return current.route;
         }
-        neighbors(current, pq);
+        neighbors(current, dst, pq);
     }
     throw RouteError(src, dst);
 }
@@ -122,13 +115,6 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         if (neighborY < 0 || neighborX < 0 || neighborX > columns - 1 || neighborY > rows - 1) {
             continue;
         }
-        // else {
-        //     if (!(visited[neighborY][neighborX]) && (arr[neighborY][neighborX].type) != '#' && (arr[neighborY][neighborX].type) != '~' ) {
-        //         Point add(neighborY, neighborX);
-        //         pq.push(add); 
-        //         visited[neighborY][neighborX] = true;
-        //     }
-        // }
 
         std::string nextStep;
         
@@ -144,15 +130,26 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         if (thisType == '.' || thisType == '*') {
             canVisit = true;
             if (thisType == '*') {
-                newBombState = current;
+                newBombState += 1;
             }
         }
-        else if (thisType = '#') {
+        else if (thisType == '#') {
             if (current.bombs > 0) {
-                if (ourUF.shouldbomb(current.lat, current.lng, neighborY, neighborX, dst)) {
+                if (uf.shouldBomb(current.lat, current.lng, neighborY, neighborX, dst)) { 
                     canVisit = true;
-                    newBombState = false;
+                    newBombState -= 1;
                 }
+            }
+        }
+        else if (thisType == '~') {
+            continue;
+        }
+        if (canVisit) {
+            int BombIndex = newBombState;
+            if (!visited[neighborY][neighborX][BombIndex]) {
+                SearchState next(neighborY, neighborX, newBombState, current.route+nextStep);
+                pq.push(next);
+                visited[neighborY][neighborX][BombIndex] = true;
             }
         }
     }
