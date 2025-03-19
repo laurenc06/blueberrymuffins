@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <map>
-#include "Map.h"
+#include "Node.cpp"
 #include "Point.h"
 #include "Node.cpp"
 
@@ -21,11 +21,10 @@ class UnionFind {
         void setCols(int c);
         void insert(int x, Map::Node point);
         int find(int x);
-        const int findIndex(const Map::Node current);
+        int findIndex(Map::Node current);
         void unite(int a, int b);
         void connectPoints(int index);
         void connectAll();
-
         bool shouldBomb(Map::Node current, Map::Node neighbor, Map::Node end);
 };
 

@@ -61,7 +61,7 @@ void UnionFind::connectAll()
 }
 
 //finds the index of the node in map points
-const int UnionFind::findIndex(const Map::Node current)
+int UnionFind::findIndex(Map::Node current)
 {
     for (const auto& point: points)
     {
@@ -111,6 +111,5 @@ bool UnionFind::shouldBomb(Map::Node current, Map::Node neighbor, Map::Node end)
 
 //IN MAP.CPP
 //must setCols somewhere
-//add new var to plug in as a param for insert function
-//(UnionFindObjName).insert(ins,Node(type,y,x))
+//add new var to plug in 
 //increment ins after every insert
