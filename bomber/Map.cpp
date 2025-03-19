@@ -2,14 +2,6 @@
 #include "Errors.h"
 
 // Member Functions
-Map::Node::Node() {
-}
-
-Map::Node::Node(char c, int yc, int xc) {
-    type = c; // #, ~, ., *
-    y = yc;
-    x = xc;
-}
 
 Map::~Map() {
     for (int i = 0; i < rows; ++i) {

@@ -8,22 +8,13 @@
 #include <cmath>
 #include "Point.h"
 #include "UnionFind.cpp"
+#include "Node.cpp"
 
 static const int dr[] = {-1, 1, 0, 0};
 static const int dc[] = {0, 0, 1, -1};
 
 class Map {
     // Member Variables
-    public: 
-    struct Node {
-        char type;
-        int y;
-        int x;
-
-        Node(char c, int yc, int xc);
-        Node();
-        // ~Node();
-    };
 
     // to figure out if there is a bomb or not
     struct SearchState {

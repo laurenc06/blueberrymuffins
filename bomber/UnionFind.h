@@ -1,7 +1,11 @@
+#ifndef UNIONFIND_H
+#define UNIONFIND_H
+
 #include <vector>
 #include <map>
 #include "Map.h"
 #include "Point.h"
+#include "Node.cpp"
 
 using namespace std;
 
@@ -17,10 +21,12 @@ class UnionFind {
         void setCols(int c);
         void insert(int x, Map::Node point);
         int find(int x);
-        const int findIndex(const Map::Node x);
+        const int findIndex(const Map::Node current);
         void unite(int a, int b);
         void connectPoints(int index);
         void connectAll();
 
         bool shouldBomb(Map::Node current, Map::Node neighbor, Map::Node end);
 };
+
+#endif
