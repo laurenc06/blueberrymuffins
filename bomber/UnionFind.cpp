@@ -10,7 +10,7 @@ void UnionFind::setCols(int c)
     rows = (parents.size())/cols;
 }
 
-void UnionFind::insert(int x, Map::Node point)
+void UnionFind::insert(int x, Node point)
 {
     points[x] = point;
     parents.push_back(x);
@@ -61,11 +61,11 @@ void UnionFind::connectAll()
 }
 
 //finds the index of the node in map points
-int UnionFind::findIndex(Map::Node current)
+int UnionFind::findIndex(Node current)
 {
     for (const auto& point: points)
     {
-        Map::Node temp = point.second;
+        Node temp = point.second;
         if(current.type == temp.type && current.y == temp.y && current.x == temp.x)
         {
             int key = point.first;
@@ -77,11 +77,11 @@ int UnionFind::findIndex(Map::Node current)
 
 // function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
 // check if bombing it would connect you to destination
-bool UnionFind::shouldBomb(Map::Node current, Map::Node neighbor, Map::Node end) {
+bool UnionFind::shouldBomb(Node current, Node neighbor, Node end) {
     int currentIndex = findIndex(current);
     int neighborIndex = findIndex(neighbor);
     int endIndex = findIndex(end);
-    Map::Node adjacent;
+    Node adjacent;
     if(find(currentIndex) != find(neighborIndex)) // first check if theyre in the same region. if so, no need to bomb
         return false;
 
