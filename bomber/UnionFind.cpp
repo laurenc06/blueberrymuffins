@@ -45,8 +45,20 @@ void UnionFind::connectPoints(Map::Node point)
 
 void UnionFind::connectAll()
 {
-    if(points.size()==0)
+    if (points.size()==0)
         return;
+}
+
+// function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
+// check if bombing it would connect you to destination
+bool UnionFind::shouldBomb(int y, int x, int ny, int nx, Point end) {
+    // first check if theyre in the same region. if so, no need to bomb
+    // find(current) == find(dest) { return false; }
+
+    // since ny, nx will be the boulder's coords, we check if the adjacent traversable cell to it is in same set as destination
+    // if (find(adjacent) == find(dest)) { return true;}
+
+    return false;
 }
 
 //add new var to count ins

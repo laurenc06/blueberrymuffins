@@ -88,31 +88,18 @@ std::string Map::route(Point src, Point dst) {
 
     SearchState start(src.lat, src.lng, initialBomb, "");
     pq.push(start);
-    // Point current, last;
-    // std::string myRoute = "";
-
-    // pq.push(src);
+    
     visited[src.lat][src.lng][0] = true;
     if (initialBomb > 0) {
         visited[src.lat][src.lng][1] = true; // true or false
     }
 
-    // current = src;
-
     while (!pq.empty()) {
-        // last = current;
         SearchState current = pq.top();
-        // current = pq.top();
         pq.pop();
-
-        // if (current.lat > last.lat) { myRoute += "s"; }
-        // else if (current.lat  <last.lat) { myRoute += "n"; }
-        // else if (current.lng > last.lng) { myRoute += "e"; }
-        // else if (current.lng < last.lng) { myRoute += "w"; }
 
         if (current.lat == dst.lat && current.lng == dst.lng) {
             return current.route;
-            // return myRoute;
         }
         neighbors(current, dst, pq);
     }
@@ -128,13 +115,6 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         if (neighborY < 0 || neighborX < 0 || neighborX > columns - 1 || neighborY > rows - 1) {
             continue;
         }
-        // else {
-        //     if (!(visited[neighborY][neighborX]) && (arr[neighborY][neighborX].type) != '#' && (arr[neighborY][neighborX].type) != '~' ) {
-        //         Point add(neighborY, neighborX);
-        //         pq.push(add); 
-        //         visited[neighborY][neighborX] = true;
-        //     }
-        // }
 
         std::string nextStep;
         
@@ -153,9 +133,9 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
                 newBombState += 1;
             }
         }
-        else if (thisType = '#') {
+        else if (thisType == '#') {
             if (current.bombs > 0) {
-                if (uf.shouldbomb(current.lat, current.lng, neighborY, neighborX, dst)) { 
+                if (uf.shouldBomb(current.lat, current.lng, neighborY, neighborX, dst)) { 
                     canVisit = true;
                     newBombState -= 1;
                 }
