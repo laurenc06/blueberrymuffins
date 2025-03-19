@@ -1,6 +1,6 @@
 #include <vector>
 #include <map>
-#include "Node.h"
+#include "Node.cpp"
 #include "Point.h"
 
 using namespace std;
