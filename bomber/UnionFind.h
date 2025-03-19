@@ -5,7 +5,6 @@
 #include <map>
 #include "Node.cpp"
 #include "Point.h"
-#include "Node.cpp"
 
 using namespace std;
 
