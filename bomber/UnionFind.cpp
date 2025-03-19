@@ -7,6 +7,7 @@ UnionFind::UnionFind()
 void UnionFind::setCols(int c)
 {
     cols = c;
+    rows = (parents.size())/cols;
 }
 
 void UnionFind::insert(int x, Map::Node point)
@@ -59,15 +60,52 @@ void UnionFind::connectAll()
     }
 }
 
+//finds the index of the node in map points
+const int UnionFind::findIndex(const Map::Node current)
+{
+    for (const auto& point: points)
+    {
+        Map::Node temp = point.second;
+        if(current.type == temp.type && current.y == temp.y && current.x == temp.x)
+        {
+            int key = point.first;
+            return key;
+        }
+    }  
+    return -1;
+}
+
 // function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
 // check if bombing it would connect you to destination
-bool UnionFind::shouldBomb(int y, int x, int ny, int nx, Point end) {
-    // first check if theyre in the same region. if so, no need to bomb
-    // find(current) == find(dest) { return false; }
+bool UnionFind::shouldBomb(Map::Node current, Map::Node neighbor, Map::Node end) {
+    int currentIndex = findIndex(current);
+    int neighborIndex = findIndex(neighbor);
+    int endIndex = findIndex(end);
+    Map::Node adjacent;
+    if(find(currentIndex) != find(neighborIndex)) // first check if theyre in the same region. if so, no need to bomb
+        return false;
 
     // since ny, nx will be the boulder's coords, we check if the adjacent traversable cell to it is in same set as destination
-    // if (find(adjacent) == find(dest)) { return true;}
-
+    if((currentIndex)+1 < cols) // east neighbor
+    {
+        if(find(currentIndex+1) == find(endIndex))
+            return true;
+    }
+    if((currentIndex)-1 >= 0) // west neighbor
+    {
+        if(find(currentIndex-1) == find(endIndex))
+            return true;
+    }
+    if((currentIndex)-cols >= 0) // north neighbor
+    {
+        if(find(currentIndex-cols) == find(endIndex))
+            return true;
+    }
+    if((currentIndex)+cols < rows) // south neighbor
+    {
+        if(find(currentIndex+cols) == find(endIndex))
+            return true;
+    }
     return false;
 }
 
