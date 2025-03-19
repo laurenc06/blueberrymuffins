@@ -16,7 +16,9 @@ Map::~Map() {
         for (int i = 0; i < rows; ++i) {
             if (visitedStates[i]) {
                 for (int j = 0; i < columns; ++j) {
-                    delete[] visitedStates[i][j];
+                    if (visitedStates[i][j]) {
+                        delete[] visitedStates[i][j];
+                    }
                 }
                 delete[] visitedStates[i];
             }
@@ -66,6 +68,14 @@ Map::Map(std::istream& stream) {
 }
 
 std::string Map::route(Point src, Point dst) {
+    if(!CheckStartPoint(src)) {
+        throw PointError(src);
+    }
+
+    else if(!CheckEndPoint(dst)) {
+        throw PointError(dst);
+    }
+
     fin = dst;
     int initialBombCount = 0;
 
@@ -81,13 +91,6 @@ std::string Map::route(Point src, Point dst) {
             visitedStates[i][j][0] = false;
             visitedStates[i][j][1] = false;
         }
-    }
-
-    if(!CheckStartPoint(src)) {
-        throw PointError(src);
-    }
-    else if(!CheckEndPoint(dst)) {
-        throw PointError(dst);
     }
 
     SearchState initialState(src.lat, src.lng, initialBombCount, "");
