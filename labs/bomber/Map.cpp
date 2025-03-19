@@ -12,21 +12,6 @@ Map::~Map() {
         grid = nullptr;
     }
 
-    // if (visitedStates) {
-    //     for (int i = 0; i < rows; ++i) {
-    //         if (visitedStates[i]) {
-    //             for (int j = 0; i < columns; ++j) {
-    //                 if (visitedStates[i][j]) {
-    //                     delete[] visitedStates[i][j];
-    //                 }
-    //             }
-    //             delete[] visitedStates[i];
-    //         }
-    //     }
-    //     delete[] visitedStates;
-    //     visitedStates = nullptr;
-    // }
-
     columns = 0;
     rows = 0;
 }
@@ -44,16 +29,9 @@ Map::Map(std::istream& stream) {
     columns = static_cast<int>(lines[0].length());
 
     grid = new Node*[rows]();
-    // visitedStates = new bool**[rows];
 
     for (int i = 0; i < rows; i++) {
         grid[i] = new Node[columns];
-        // visitedStates[i] = new bool*[columns];
-        // for (int j = 0; j < columns; j++) {
-        //     visitedStates[i][j] = new bool[2];
-        //     visitedStates[i][j][0] = false; // represents bomb used state
-        //     visitedStates[i][j][1] = false; // bomb available state
-        // }
     }
 
     uf.setCols(columns);
@@ -83,8 +61,6 @@ std::string Map::route(Point src, Point dst) {
     // reset visited states
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-            // visitedStates[i][j][0] = false;
-            // visitedStates[i][j][1] = false;
             grid[i][j].visited = false;
             grid[i][j].prevBombCount= 0;
 
@@ -98,11 +74,9 @@ std::string Map::route(Point src, Point dst) {
     SearchState initialState(src.lat, src.lng, initialBombCount, "");
     stateQueue.push(initialState);
     
-    // visitedStates[src.lat][src.lng][0] = true;
     grid[src.lat][src.lng].visited = true;
 
     if (initialBombCount > 0) {
-        // visitedStates[src.lat][src.lng][1] = true; // true or false
         grid[src.lat][src.lng].prevBombCount = 1;
 
     }
@@ -158,7 +132,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         }
 
         if (canVisit) {
-            if (!grid[neighborY][neighborX].visited || grid[neighborY][neighborX].prevBombCount != newBombCount) {
+            if (!grid[neighborY][neighborX].visited || grid[neighborY][neighborX].prevBombCount < newBombCount) {
                 SearchState next(neighborY, neighborX, newBombCount, current.route+nextStep);
                 stateQueue.push(next);
                 grid[neighborY][neighborX].visited = true;
