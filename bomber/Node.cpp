@@ -12,7 +12,7 @@ class Node {
         x = xc;
     }
 
-    Node(Node& other) {
+    Node(const Node& other) {
         type = other.type;
         y = other.y;
         x = other.x;
