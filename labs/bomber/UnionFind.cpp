@@ -19,9 +19,12 @@ void UnionFind::insert(int x, Node point)
 
 int UnionFind::find(int x)
 {
-    if(parents[x] && parents[x] != x)
-        parents[x] = find(parents[x]);
-    return parents[x];
+    if (x>=0 && x<parents.size())
+    {
+        if(parents[x] && parents[x] != x)
+            parents[x] = find(parents[x]);
+    }
+    return x;
 }
 
 void UnionFind::unite(int a, int b)
@@ -82,7 +85,7 @@ bool UnionFind::shouldBomb(Node current, Node neighbor, Node end) {
     int neighborIndex = findIndex(neighbor);
     int endIndex = findIndex(end);
     Node adjacent;
-    if(find(currentIndex) != find(neighborIndex)) // first check if theyre in the same region. if so, no need to bomb
+    if(find(currentIndex) == find(endIndex)) // first check if theyre in the same region. if so, no need to bomb
         return false;
 
     // since ny, nx will be the boulder's coords, we check if the adjacent traversable cell to it is in same set as destination
