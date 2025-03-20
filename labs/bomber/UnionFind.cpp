@@ -14,6 +14,7 @@ void UnionFind::insert(int x, Node point)
 {
     points[x] = point;
     parents.push_back(x);
+    rank.push_back(x);
     visited.push_back(false);
 }
 
@@ -33,28 +34,49 @@ void UnionFind::unite(int a, int b)
     int aRoot = find(a);
     int bRoot = find(b);
     if(aRoot!=bRoot)
-        parents[aRoot] = bRoot; //doesn't matter which one becomes root (?)
-    return;
-}
-
-void UnionFind::connectPoints(int index)
-{
-    while((points[index]).y >= 0 && (points[index]).x >= 0 && (points[index]).type != '~' && (points[index]).type != '#')
     {
-        //call connectPoints for all of the neighbors
-        connectPoints(index+1);
-        connectPoints(index-1);
-        connectPoints(index-cols);
-        connectPoints(index+cols);
-        unite(index, index+1); //unite w east neighbor
-        unite(index, index-1); //unite w west neighbor
-        unite(index, index-cols); //unite w north neighbor
-        unite(index, index+cols); //unite w south neighbor
+        if(rank[aRoot] < rank[bRoot])
+            parents[aRoot] = bRoot;
+        else if(rank[aRoot] > rank[bRoot])
+            parents[bRoot] = aRoot;
+        else {
+            parents[bRoot] = aRoot;
+            rank[aRoot]++;
+        }
     }
 }
 
+/*
+void UnionFind::connectPoints(int index)
+{
+    if(index >= 0 && index < (cols*rows)) //if index is in bounds
+    {
+        if((points[index]).type != '~' && (points[index]).type != '#') //(points[index]).y >= 0 && (points[index]).x >= 0)
+        {
+            visited[index] = true; //set visited of current index to true
+            //call connectPoints for all of the neighbors
+            if(index%cols != (cols-1)) //if not at end of row
+            {
+                connectPoints(index+1);
+                unite(index, index+1); //unite w east neighbor
+            }
+            if(index%cols != 0) //if not at start of row
+            {
+                connectPoints(index-1);
+                unite(index, index-1); //unite w west neighbor
+            }
+            connectPoints(index-cols);
+            unite(index, index-cols); //unite w north neighbor
+            connectPoints(index+cols);                
+            unite(index, index+cols); //unite w south neighbor
+        }
+    }
+}
+*/
+
 void UnionFind::connectAll()
 {
+    /*
     if (points.size()==0)
         return;
     for(int i=0; i< static_cast<int>(parents.size()); i++) //iterate through parents (0 to 1-#ofpointsingrid)
@@ -62,6 +84,41 @@ void UnionFind::connectAll()
         while(!visited[i] && (points[i]).type != '~' && (points[i]).type != '#') //while the current point is NOT visited, it's not a ~ or #
             connectPoints(i); //call connectPoints on that point
     }
+    */
+
+    for(int i=0; i<rows; i++)
+    {
+        for(int j=0; j<cols; j++)
+        {
+            int current = (i*cols) + j;
+            visited[current] = true;
+            //if in bounds and valid check east
+            if(!visited[j+1] && (j+1)<cols && points[j+1].type != '~' && points[j+1].type != '#' && (j+1)%cols != (cols-1))
+            {
+                unite(current, current+1);
+                visited[current+1] = true;
+            }
+            //if in bounds and valid check west
+            if(!visited[j-1] && (j-1)>=0 && (j-1)<cols && points[j-1].type != '~' && points[j-1].type != '#' && (j-1)%cols != 0)
+            {
+                unite(current, current-1);
+                visited[current-1] = true;
+            }
+            //if in bounds and valid check north
+            if(!visited[current-cols] && (i-1)>=0 && points[current-cols].type != '~' && points[current-cols].type != '#')
+            {
+                unite(current, current-cols);
+                visited[current-cols] = true;
+            }
+            //if in bounds and valid check south
+            if(!visited[current+cols] && (i+1)<rows && points[current+cols].type != '~' && points[current+cols].type != '#')
+            {
+                unite(current, current+cols);
+                visited[current+cols] = true;
+            }
+        }
+    }
+
 }
 
 //finds the index of the node in map points
