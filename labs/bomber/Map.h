@@ -9,6 +9,7 @@
 #include "Point.h"
 #include "UnionFind.h"
 #include "Node.h"
+#include <cstdlib>
 
 static const int dr[] = {-1, 1, 0, 0};
 static const int dc[] = {0, 0, 1, -1};
@@ -37,11 +38,11 @@ class Map {
     
         CompareStates(const SearchState &fin) : destination(fin) {};
 
-        float distance(const SearchState &current) const { 
-            float distance;
-            float yDiff = pow(destination.lat-current.lat, 2);
-            float xDiff = pow(destination.lng-current.lng, 2);
-            distance = sqrt(yDiff + xDiff);
+        int distance(const SearchState &current) const { 
+            int distance;
+            int yDiff = std::abs(destination.lat-current.lat);
+            int xDiff = std::abs(destination.lng-current.lng);
+            distance = yDiff+xDiff;
             return distance;
         }
 
