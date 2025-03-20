@@ -141,7 +141,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         }
 
         if (canVisit) {
-            if (!grid[neighborY][neighborX].visited || grid[neighborY][neighborX].prevBombCount < newBombCount && newBombCount < maxBombCount && newBombCount < maxBouldersCount) {
+            if (!grid[neighborY][neighborX].visited || (grid[neighborY][neighborX].prevBombCount < newBombCount && newBombCount < maxBombCount && newBombCount < maxBouldersCount)) {
                 //also check if newBombCount is less than maxBombCount and also less than maxBoulderCount
                 SearchState next(neighborY, neighborX, newBombCount, current.route+nextStep);
                 stateQueue.push(next);
