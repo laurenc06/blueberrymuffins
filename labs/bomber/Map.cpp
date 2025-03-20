@@ -38,14 +38,12 @@ Map::Map(std::istream& stream) {
     int insertIndex = 0;
     for (int y = 0; y < rows; y++) {
         for (int x = 0; x < columns; x++) {
-            /*
             //update maxBombCount
             if(lines[y][x] == '*')
                 maxBombCount++;
             //update maxBouldersCount
-            else if(linex[y][x] == '#')
+            else if(lines[y][x] == '#')
                 maxBouldersCount++;
-            */
             grid[y][x] = Node(lines[y][x], y, x);
             uf.insert(insertIndex, Node(lines[y][x],y,x));
         }
@@ -143,7 +141,8 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         }
 
         if (canVisit) {
-            if (!grid[neighborY][neighborX].visited || grid[neighborY][neighborX].prevBombCount < newBombCount) {
+            if (!grid[neighborY][neighborX].visited || grid[neighborY][neighborX].prevBombCount < newBombCount && newBombCount < maxBombCount && newBombCount < maxBouldersCount) {
+                //also check if newBombCount is less than maxBombCount and also less than maxBoulderCount
                 SearchState next(neighborY, neighborX, newBombCount, current.route+nextStep);
                 stateQueue.push(next);
                 grid[neighborY][neighborX].visited = true;
