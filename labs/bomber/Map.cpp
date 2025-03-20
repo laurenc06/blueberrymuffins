@@ -38,6 +38,14 @@ Map::Map(std::istream& stream) {
     int insertIndex = 0;
     for (int y = 0; y < rows; y++) {
         for (int x = 0; x < columns; x++) {
+            /*
+            //update maxBombCount
+            if(lines[y][x] == '*')
+                maxBombCount++;
+            //update maxBouldersCount
+            else if(linex[y][x] == '#')
+                maxBouldersCount++;
+            */
             grid[y][x] = Node(lines[y][x], y, x);
             uf.insert(insertIndex, Node(lines[y][x],y,x));
         }

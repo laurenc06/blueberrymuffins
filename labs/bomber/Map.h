@@ -58,6 +58,7 @@ public:
     Node** grid;
     // bool*** visitedStates;
     int columns, rows;
+    //int maxBombCount(0), maxBouldersCount(0);
 
     UnionFind uf;
 
