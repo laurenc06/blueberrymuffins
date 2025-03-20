@@ -90,24 +90,24 @@ bool UnionFind::shouldBomb(Node current, Node neighbor, Node end) {
         return false;
 
     // since ny, nx will be the boulder's coords, we check if the adjacent traversable cell to it is in same set as destination
-    if((currentIndex)+1 < cols) // east neighbor
+    if((neighborIndex)+1 < cols) // east neighbor
     {
-        if(find(currentIndex+1) == find(endIndex))
+        if(find(neighborIndex+1) == find(endIndex))
             return true;
     }
-    if((currentIndex)-1 >= 0) // west neighbor
+    if((neighborIndex)-1 >= 0) // west neighbor
     {
-        if(find(currentIndex-1) == find(endIndex))
+        if(find(neighborIndex-1) == find(endIndex))
             return true;
     }
-    if((currentIndex)-cols >= 0) // north neighbor
+    if((neighborIndex)-cols >= 0) // north neighbor
     {
-        if(find(currentIndex-cols) == find(endIndex))
+        if(find(neighborIndex-cols) == find(endIndex))
             return true;
     }
-    if((currentIndex)+cols < rows) // south neighbor
+    if((neighborIndex)+cols < rows) // south neighbor
     {
-        if(find(currentIndex+cols) == find(endIndex))
+        if(find(neighborIndex+cols) == find(endIndex))
             return true;
     }
     return false;
