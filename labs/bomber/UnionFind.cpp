@@ -19,7 +19,8 @@ void UnionFind::insert(int x, Node point)
 
 int UnionFind::find(int x)
 {
-    if (x>=0 && x<parents.size())
+    int numElements = rows*cols;
+    if (index>=0 && index<numElements)
     {
         if(parents[x] && parents[x] != x)
             parents[x] = find(parents[x]);
