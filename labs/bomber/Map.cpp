@@ -42,6 +42,9 @@ Map::Map(std::istream& stream) {
             uf.insert(insertIndex, Node(lines[y][x],y,x));
         }
     }
+
+    //connect the connected nodes in uf
+    uf.connectAll();
 }
 
 std::string Map::route(Point src, Point dst) {
