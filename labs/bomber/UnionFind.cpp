@@ -35,9 +35,9 @@ void UnionFind::unite(int a, int b)
     int bRoot = find(b);
     if(aRoot!=bRoot)
     {
-        if(rank[aRoot] < rank[bRoot])
+        if(rank[aRoot] > rank[bRoot])
             parents[aRoot] = bRoot;
-        else if(rank[aRoot] > rank[bRoot])
+        else if(rank[aRoot] < rank[bRoot])
             parents[bRoot] = aRoot;
         else {
             parents[bRoot] = aRoot;
@@ -91,30 +91,33 @@ void UnionFind::connectAll()
         for(int j=0; j<cols; j++)
         {
             int current = (i*cols) + j;
-            visited[current] = true;
-            //if in bounds and valid check east
-            if(!visited[j+1] && (j+1)<cols && points[j+1].type != '~' && points[j+1].type != '#' && (j+1)%cols != (cols-1))
+            if(!visited[current])
             {
-                unite(current, current+1);
-                visited[current+1] = true;
-            }
-            //if in bounds and valid check west
-            if(!visited[j-1] && (j-1)>=0 && (j-1)<cols && points[j-1].type != '~' && points[j-1].type != '#' && (j-1)%cols != 0)
-            {
-                unite(current, current-1);
-                visited[current-1] = true;
-            }
-            //if in bounds and valid check north
-            if(!visited[current-cols] && (i-1)>=0 && points[current-cols].type != '~' && points[current-cols].type != '#')
-            {
-                unite(current, current-cols);
-                visited[current-cols] = true;
-            }
-            //if in bounds and valid check south
-            if(!visited[current+cols] && (i+1)<rows && points[current+cols].type != '~' && points[current+cols].type != '#')
-            {
-                unite(current, current+cols);
-                visited[current+cols] = true;
+                visited[current] = true;
+                //if in bounds and valid check east
+                if((j+1)<cols && j%cols != (cols-1) && points[j+1].type != '~' && points[j+1].type != '#')
+                {
+                    unite(current, current+1);
+                    visited[current+1] = true;
+                }
+                //if in bounds and valid check west
+                if((j-1)>=0 && j%cols != 0 && points[j-1].type != '~' && points[j-1].type != '#')
+                {
+                    unite(current, current-1);
+                    visited[current-1] = true;
+                }
+                //if in bounds and valid check north
+                if((i-1)>=0 && points[current-cols].type != '~' && points[current-cols].type != '#')
+                {
+                    unite(current, current-cols);
+                    visited[current-cols] = true;
+                }
+                //if in bounds and valid check south
+                if((i+1)<rows && points[current+cols].type != '~' && points[current+cols].type != '#')
+                {
+                    unite(current, current+cols);
+                    visited[current+cols] = true;
+                }
             }
         }
     }
