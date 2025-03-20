@@ -23,7 +23,6 @@ class UnionFind {
         int find(int x);
         int findIndex(Node current);
         void unite(int a, int b);
-        //void connectPoints(int index);
         void connectAll();
         bool shouldBomb(Node current, Node neighbor, Node end);
 };

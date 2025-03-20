@@ -46,46 +46,8 @@ void UnionFind::unite(int a, int b)
     }
 }
 
-/*
-void UnionFind::connectPoints(int index)
-{
-    if(index >= 0 && index < (cols*rows)) //if index is in bounds
-    {
-        if((points[index]).type != '~' && (points[index]).type != '#') //(points[index]).y >= 0 && (points[index]).x >= 0)
-        {
-            visited[index] = true; //set visited of current index to true
-            //call connectPoints for all of the neighbors
-            if(index%cols != (cols-1)) //if not at end of row
-            {
-                connectPoints(index+1);
-                unite(index, index+1); //unite w east neighbor
-            }
-            if(index%cols != 0) //if not at start of row
-            {
-                connectPoints(index-1);
-                unite(index, index-1); //unite w west neighbor
-            }
-            connectPoints(index-cols);
-            unite(index, index-cols); //unite w north neighbor
-            connectPoints(index+cols);                
-            unite(index, index+cols); //unite w south neighbor
-        }
-    }
-}
-*/
-
 void UnionFind::connectAll()
 {
-    /*
-    if (points.size()==0)
-        return;
-    for(int i=0; i< static_cast<int>(parents.size()); i++) //iterate through parents (0 to 1-#ofpointsingrid)
-    {
-        while(!visited[i] && (points[i]).type != '~' && (points[i]).type != '#') //while the current point is NOT visited, it's not a ~ or #
-            connectPoints(i); //call connectPoints on that point
-    }
-    */
-
     for(int i=0; i<rows; i++)
     {
         for(int j=0; j<cols; j++)
