@@ -122,6 +122,10 @@ bool UnionFind::shouldBomb(Node current, Node boulder, Node end) {
     return false;
 }
 
-//IN MAP.CPP
-//add new var to plug in 
-//increment ins after every insert
+void UnionFind::numBombs()
+{
+    for(size_t i=0; i<parents.size(); i++)
+    {
+        
+    }
+}

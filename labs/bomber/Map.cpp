@@ -50,6 +50,9 @@ Map::Map(std::istream& stream) {
 
     //connect the connected nodes in uf
     uf.connectAll((const Node**)grid);
+
+    //updates num of bombs per region
+    uf.numBombs();
 }
 
 std::string Map::route(Point src, Point dst) {

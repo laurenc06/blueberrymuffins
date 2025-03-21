@@ -11,6 +11,7 @@ using namespace std;
 class UnionFind {
     vector<int> parents;
     vector<int> rank;
+    map<int, int> numBombs;
     int cols; // # of columns
     int rows; // # of rows
 
@@ -24,6 +25,7 @@ class UnionFind {
         void connectAll(const Node** grid);
         bool shouldBomb(Node current, Node neighbor, Node end);
         bool isWalkable(Node cell);
+        void numBombs();
 };
 
 #endif
