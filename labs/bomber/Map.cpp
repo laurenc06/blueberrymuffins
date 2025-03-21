@@ -29,7 +29,6 @@ Map::Map(std::istream& stream) {
     columns = static_cast<int>(allData[0].length());
 
     uf = UnionFind(rows, columns);
-
     grid = new Node*[rows]();
 
     for (int i = 0; i < rows; i++) {
@@ -64,16 +63,8 @@ std::string Map::route(Point src, Point dst) {
     fin = dst;
     int initialBombCount = 0;
     
+    std::set<std::tuple<int, int, int>> visited;
     std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> stateQueue(CompareStates(SearchState(dst.lat, dst.lng, 0, "")));
-
-    // reset visited states
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            grid[i][j].visited = false;
-            grid[i][j].prevBombCount= 0;
-
-        }
-    }
 
     UnionFind thisUF = uf;
 
@@ -84,12 +75,7 @@ std::string Map::route(Point src, Point dst) {
     SearchState initialState(src.lat, src.lng, initialBombCount, "");
     stateQueue.push(initialState);
     
-    grid[src.lat][src.lng].visited = true;
-
-    if (initialBombCount > 0) {
-        grid[src.lat][src.lng].prevBombCount = 1;
-
-    }
+    visited.insert(std::make_tuple(src.lat, src.lng, initialBombCount));
 
     while (!stateQueue.empty()) {
         SearchState current = stateQueue.top();
@@ -98,12 +84,12 @@ std::string Map::route(Point src, Point dst) {
         if (current.lat == dst.lat && current.lng == dst.lng) {
             return current.route;
         }
-        neighbors(current, dst, stateQueue, thisUF);
+        neighbors(current, dst, stateQueue, thisUF, visited);
     }
     throw RouteError(src, dst);
 }
 
-void Map::neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF) {
+void Map::neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
     for (int d = 0; d < 4; d++) {
         int neighborY = current.lat + dr[d];
         int neighborX = current.lng + dc[d];
@@ -147,11 +133,11 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         }
 
         if (canVisit) {
-            if (!grid[neighborY][neighborX].visited || (grid[neighborY][neighborX].prevBombCount < newBombCount && newBombCount < maxBombCount && newBombCount < maxBouldersCount)) {
+            auto neighborState = std::make_tuple(neighborY, neighborX, newBombCount);
+            if (visited.count(neighborState) == 0) {
+                visited.insert(neighborState);
                 SearchState next(neighborY, neighborX, newBombCount, current.route+nextStep);
                 stateQueue.push(next);
-                grid[neighborY][neighborX].visited = true;
-                grid[neighborY][neighborX].prevBombCount = newBombCount;
             }
         }
     }

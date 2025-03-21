@@ -9,6 +9,7 @@
 #include "Point.h"
 #include "UnionFind.h"
 #include "Node.h"
+#include <set>
 #include <cstdlib>
 
 static const int dr[] = {-1, 1, 0, 0};
@@ -57,7 +58,6 @@ public:
     ~Map();
 
     Node** grid;
-    // bool*** visitedStates;
     int columns, rows;
     int maxBombCount=0;
     int maxBouldersCount=0;
@@ -66,7 +66,7 @@ public:
 
     Point fin;
 
-    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &pq, UnionFind& thisUF);
+    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &pq, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited);
 
     bool CheckStartPoint(Point start);
     bool CheckEndPoint(Point end);

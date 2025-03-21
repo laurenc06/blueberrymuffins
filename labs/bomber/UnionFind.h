@@ -10,9 +10,7 @@ using namespace std;
 
 class UnionFind {
     vector<int> parents;
-    vector<bool> visited;
     vector<int> rank;
-    map<int,Node> points;
     int cols; // # of columns
     int rows; // # of rows
 
