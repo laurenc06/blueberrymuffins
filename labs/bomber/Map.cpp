@@ -116,7 +116,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
                 if (thisUF.shouldBomb(grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng])) { 
                     //std::cout << "should bomb " << current.lat << " " << current.lng << std::endl;
                     canVisit = true;
-                    bombingSim(grid[neighborY][neighborX], thisUF);
+                    // bombingSim(grid[neighborY][neighborX], thisUF);
                     newBombCount -= 1;
                     
                 }
@@ -169,24 +169,24 @@ bool Map::isWalkable(Node cell) {
     return false;
 }
 
-void Map::bombingSim(Node boulder, UnionFind& thisUF) {
-    int bRow = boulder.y;
-    int bCol = boulder.x;
-    int boulderIdx = thisUF.getIndex(boulder);
+// void Map::bombingSim(Node boulder, UnionFind& thisUF) {
+//     int bRow = boulder.y;
+//     int bCol = boulder.x;
+//     int boulderIdx = thisUF.getIndex(boulder);
 
-    if (bCol + 1 < columns && isWalkable(grid[bRow][bCol+1])) {
-        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow][bCol+1]));
-    }
-    if (bCol - 1 >= 0 && isWalkable(grid[bRow][bCol-1])) {
-        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow][bCol-1]));
-    }
-    if (bRow + 1 < rows && isWalkable(grid[bRow+1][bCol])) {
-        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow+1][bCol]));
-    }
-    if (bRow - 1 >= 0 && isWalkable(grid[bRow-1][bCol])) {
-        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow-1][bCol]));
-    }
-}
+//     if (bCol + 1 < columns && isWalkable(grid[bRow][bCol+1])) {
+//         thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow][bCol+1]));
+//     }
+//     if (bCol - 1 >= 0 && isWalkable(grid[bRow][bCol-1])) {
+//         thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow][bCol-1]));
+//     }
+//     if (bRow + 1 < rows && isWalkable(grid[bRow+1][bCol])) {
+//         thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow+1][bCol]));
+//     }
+//     if (bRow - 1 >= 0 && isWalkable(grid[bRow-1][bCol])) {
+//         thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow-1][bCol]));
+//     }
+// }
 
 bool Map::CheckStartPoint(Point start) {
     if (start.lat < 0 || start.lng < 0 || start.lat > rows - 1 || start.lng > columns - 1) {
