@@ -15,6 +15,7 @@
 
 static const int dr[] = {-1, 1, 0, 0};
 static const int dc[] = {0, 0, 1, -1};
+static const char directions[] = {'n', 's', 'e', 'w'};
 
 class Map {
     // Member Variables
@@ -24,11 +25,13 @@ class Map {
         int lat;
         int lng;
         int bombs;
+        std::string route;
 
-        SearchState(int y, int x, int b) {
+        SearchState(int y, int x, int b, const std::string& r) {
             lat = y;
             lng = x;
             bombs = b;
+            route = r;
         }
 
     };
@@ -63,9 +66,9 @@ public:
 
     UnionFind uf;
 
-    Point fin;
+    // Point fin;
 
-    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent);
+    void neighbors(const SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited);
     bool CheckStartPoint(Point start);
     bool CheckEndPoint(Point end);
 
@@ -73,8 +76,7 @@ public:
 
     private:
         bool isWalkable(Node cell);
-        void bombingSim(Node boulder, UnionFind& thisUF);
-        std::string reconstructPath(int goalY, int goalX, int goalBombs, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent, Point src);
-};
+        void bombingSim(Node boulder, UnionFind& thisUF); 
+    };
 
 #endif

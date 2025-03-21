@@ -1,9 +1,8 @@
 #include "Map.h"
 #include "Errors.h"
+#include <unordered_set>
 
 // Member Functions
-
-const char directions[] = {'n', 's', 'e', 'w'};
 
 Map::~Map() {
     if (grid) {
@@ -62,12 +61,11 @@ std::string Map::route(Point src, Point dst) {
         throw PointError(dst);
     }
 
-    fin = dst;
+    // fin = dst; // do we need?
     int initialBombCount = 0;
     
     std::set<std::tuple<int, int, int>> visited;
-    std::map<std::tuple<int, int, int>, std::pair<std::tuple<int, int, int>, char>> parent;
-    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> stateQueue(CompareStates(SearchState(dst.lat, dst.lng, 0)));
+    std::queue<SearchState> stateQueue;
 
     UnionFind thisUF = uf;
 
@@ -75,24 +73,24 @@ std::string Map::route(Point src, Point dst) {
         initialBombCount = 1;
     }
 
-    SearchState initialState(src.lat, src.lng, initialBombCount);
+    SearchState initialState(src.lat, src.lng, initialBombCount, "");
     stateQueue.push(initialState);
     
     visited.insert(std::make_tuple(src.lat, src.lng, initialBombCount));
 
     while (!stateQueue.empty()) {
-        SearchState current = stateQueue.top();
+        SearchState current = stateQueue.front();
         stateQueue.pop();
 
         if (current.lat == dst.lat && current.lng == dst.lng) {
-            return reconstructPath(current.lat, current.lng, current.bombs, parent, src);
+            return current.route;
         }
-        neighbors(current, dst, stateQueue, thisUF, visited, parent);
+        neighbors(current, dst, stateQueue, thisUF, visited);
     }
     throw RouteError(src, dst);
 }
 
-void Map::neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent) {
+void Map::neighbors(const SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
     for (int d = 0; d < 4; d++) {
         int neighborY = current.lat + dr[d];
         int neighborX = current.lng + dc[d];
@@ -108,7 +106,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         if (cellType == '.' || cellType == '*') {
             canVisit = true;
             if (cellType == '*') {
-                newBombCount += 1;
+                newBombCount = std::min(newBombCount + 1, maxBouldersCount);
             }
         }
         else if (cellType == '#') {
@@ -125,41 +123,13 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
 
         if (canVisit) {
             auto neighborState = std::make_tuple(neighborY, neighborX, newBombCount);
-            if (visited.count(neighborState) == 0) {
+            if (!visited.count(neighborState)) {
                 visited.insert(neighborState);
-                parent[neighborState] = {std::make_tuple(current.lat, current.lng, current.bombs), directions[d]};
-                SearchState next(neighborY, neighborX, newBombCount);
+                SearchState next(neighborY, neighborX, newBombCount, current.route+directions[d]);
                 stateQueue.push(next);
             }
         }
     }
-}
-
-std::string Map::reconstructPath(int goalY, int goalX, int goalBombs, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent, Point src)
-{
-    std::string path = "";
-    int row = goalY;
-    int col = goalX;
-    int bombs = goalBombs;
-
-    while (!(row == src.lat && col == src.lng)) {
-        std::tuple<int,int,int> current = std::make_tuple(row, col, bombs);
-        auto iterator = parent.find(current);
-        if (iterator == parent.end()) { // if path doesnt exist
-            break;
-        }
-        else {
-            char move = iterator->second.second;
-            path = move + path;
-
-            std::tuple<int,int,int> prev = iterator->second.first;
-            row = std::get<0>(prev);
-            col = std::get<1>(prev);
-            bombs = std::get<2>(prev);
-        }
-
-    }
-    return path;
 }
 
 bool Map::isWalkable(Node cell) {
