@@ -113,13 +113,16 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
             }
         }
         else if (cellType == '#') {
-            if(neighborY == dst.lat && neighborX == dst.lng) //if neighbor is the destination
-                canVisit = true;
-            else if (newBombCount > 0) {
-                if (thisUF.shouldBomb((const Node**)grid, grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng])) { 
+            if (newBombCount > 0) {
+                if(neighborY == dst.lat && neighborX == dst.lng) //if neighbor is the destination
+                {
+                    canVisit = true;
+                    newBombCount--;
+                }
+                else if (thisUF.shouldBomb((const Node**)grid, grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng])) { 
                     canVisit = true;
                     // bombingSim(grid[neighborY][neighborX], thisUF);
-                    newBombCount -= 1;   
+                    newBombCount--;   
                 }
             }
         }
