@@ -66,12 +66,16 @@ public:
 
     Point fin;
 
-    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &pq);
+    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &pq, UnionFind& thisUF);
 
     bool CheckStartPoint(Point start);
     bool CheckEndPoint(Point end);
 
     std::string route(Point src, Point dst);
+
+    private:
+        bool isWalkable(Node cell);
+        void bombingSim(Node boulder, UnionFind& thisUF);
 };
 
 #endif

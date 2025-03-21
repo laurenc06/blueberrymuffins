@@ -17,16 +17,18 @@ Map::~Map() {
 }
 
 Map::Map(std::istream& stream) {
-    std::vector<std::string> lines;
+    std::vector<std::string> allData;
     std::string line;
     while (getline(stream, line)) {
         if (!line.empty()) {
-            lines.push_back(line);
+            allData.push_back(line);
         }
     }
 
-    rows = static_cast<int>(lines.size());
-    columns = static_cast<int>(lines[0].length());
+    rows = static_cast<int>(allData.size());
+    columns = static_cast<int>(allData[0].length());
+
+    uf = UnionFind(rows, columns);
 
     grid = new Node*[rows]();
 
@@ -34,23 +36,20 @@ Map::Map(std::istream& stream) {
         grid[i] = new Node[columns];
     }
 
-    uf.setCols(columns);
-    int insertIndex = 0;
     for (int y = 0; y < rows; y++) {
         for (int x = 0; x < columns; x++) {
             //update maxBombCount
-            if(lines[y][x] == '*')
+            if(allData[y][x] == '*')
                 maxBombCount++;
             //update maxBouldersCount
-            else if(lines[y][x] == '#')
+            else if(allData[y][x] == '#')
                 maxBouldersCount++;
-            grid[y][x] = Node(lines[y][x], y, x);
-            uf.insert(insertIndex, Node(lines[y][x],y,x));
+            grid[y][x] = Node(allData[y][x], y, x);
         }
     }
 
     //connect the connected nodes in uf
-    uf.connectAll();
+    uf.connectAll((const Node**)grid);
 }
 
 std::string Map::route(Point src, Point dst) {
@@ -76,6 +75,8 @@ std::string Map::route(Point src, Point dst) {
         }
     }
 
+    UnionFind thisUF = uf;
+
     if (grid[src.lat][src.lng].type == '*') {
         initialBombCount = 1;
     }
@@ -97,12 +98,12 @@ std::string Map::route(Point src, Point dst) {
         if (current.lat == dst.lat && current.lng == dst.lng) {
             return current.route;
         }
-        neighbors(current, dst, stateQueue);
+        neighbors(current, dst, stateQueue, thisUF);
     }
     throw RouteError(src, dst);
 }
 
-void Map::neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue) {
+void Map::neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF) {
     for (int d = 0; d < 4; d++) {
         int neighborY = current.lat + dr[d];
         int neighborX = current.lng + dc[d];
@@ -130,10 +131,12 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         }
         else if (cellType == '#') {
             if (newBombCount > 0) {
-                if (uf.shouldBomb(grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng])) { 
+                if (thisUF.shouldBomb(grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng])) { 
                     //std::cout << "should bomb " << current.lat << " " << current.lng << std::endl;
                     canVisit = true;
+                    bombingSim(grid[neighborY][neighborX], thisUF);
                     newBombCount -= 1;
+                    
                 }
                 //else
                     //std::cout << "should NOT bomb " << current.lat << " " << current.lng << std::endl;
@@ -151,6 +154,32 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
                 grid[neighborY][neighborX].prevBombCount = newBombCount;
             }
         }
+    }
+}
+
+bool Map::isWalkable(Node cell) {
+    if (cell.type == '*' || cell.type == '.') {
+        return true;
+    }
+    return false;
+}
+
+void Map::bombingSim(Node boulder, UnionFind& thisUF) {
+    int bRow = boulder.y;
+    int bCol = boulder.x;
+    int boulderIdx = thisUF.getIndex(boulder);
+
+    if (bCol + 1 < columns && isWalkable(grid[bRow][bCol+1])) {
+        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow][bCol+1]));
+    }
+    if (bCol - 1 >= 0 && isWalkable(grid[bRow][bCol-1])) {
+        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow][bCol-1]));
+    }
+    if (bRow + 1 < rows && isWalkable(grid[bRow+1][bCol])) {
+        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow+1][bCol]));
+    }
+    if (bRow - 1 >= 0 && isWalkable(grid[bRow-1][bCol])) {
+        thisUF.unite(boulderIdx, thisUF.getIndex(grid[bRow-1][bCol]));
     }
 }
 
