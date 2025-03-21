@@ -127,7 +127,6 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
                     //std::cout << "should bomb " << neighborY << " " << neighborX << std::endl;
                     // bombingSim(grid[neighborY][neighborX], thisUF);
                     newBombCount--;   
-                    grid[neighborY][neighborX].type = '.';
                 }
             }
         }
