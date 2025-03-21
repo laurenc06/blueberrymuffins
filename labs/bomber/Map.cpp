@@ -3,6 +3,8 @@
 
 // Member Functions
 
+const char directions[] = {'n', 's', 'e', 'w'};
+
 Map::~Map() {
     if (grid) {
         for (int i = 0; i < rows; ++i) {
@@ -64,7 +66,8 @@ std::string Map::route(Point src, Point dst) {
     int initialBombCount = 0;
     
     std::set<std::tuple<int, int, int>> visited;
-    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> stateQueue(CompareStates(SearchState(dst.lat, dst.lng, 0, "")));
+    std::map<std::tuple<int, int, int>, std::pair<std::tuple<int, int, int>, char>> parent;
+    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> stateQueue(CompareStates(SearchState(dst.lat, dst.lng, 0)));
 
     UnionFind thisUF = uf;
 
@@ -72,7 +75,7 @@ std::string Map::route(Point src, Point dst) {
         initialBombCount = 1;
     }
 
-    SearchState initialState(src.lat, src.lng, initialBombCount, "");
+    SearchState initialState(src.lat, src.lng, initialBombCount);
     stateQueue.push(initialState);
     
     visited.insert(std::make_tuple(src.lat, src.lng, initialBombCount));
@@ -82,14 +85,14 @@ std::string Map::route(Point src, Point dst) {
         stateQueue.pop();
 
         if (current.lat == dst.lat && current.lng == dst.lng) {
-            return current.route;
+            return reconstructPath(current.lat, current.lng, current.bombs, parent, src);
         }
-        neighbors(current, dst, stateQueue, thisUF, visited);
+        neighbors(current, dst, stateQueue, thisUF, visited, parent);
     }
     throw RouteError(src, dst);
 }
 
-void Map::neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
+void Map::neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent) {
     for (int d = 0; d < 4; d++) {
         int neighborY = current.lat + dr[d];
         int neighborX = current.lng + dc[d];
@@ -97,13 +100,6 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
         if (neighborY < 0 || neighborX < 0 || neighborX >= columns || neighborY >= rows) {
             continue;
         }
-
-        std::string nextStep;
-        
-        if (dr[d] == 1) { nextStep = "s"; }
-        else if (dr[d] == -1) { nextStep += "n"; }
-        else if (dc[d] == 1) { nextStep += "e"; }
-        else if (dc[d] == -1) { nextStep += "w"; }
 
         char cellType = grid[neighborY][neighborX].type;
         int newBombCount = current.bombs;
@@ -124,23 +120,46 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
                     newBombCount -= 1;
                     
                 }
-                //else
-                    //std::cout << "should NOT bomb " << current.lat << " " << current.lng << std::endl;
             }
-        }
-        else if (cellType == '~') {
-            continue;
         }
 
         if (canVisit) {
             auto neighborState = std::make_tuple(neighborY, neighborX, newBombCount);
             if (visited.count(neighborState) == 0) {
                 visited.insert(neighborState);
-                SearchState next(neighborY, neighborX, newBombCount, current.route+nextStep);
+                parent[neighborState] = {std::make_tuple(current.lat, current.lng, current.bombs), directions[d]};
+                SearchState next(neighborY, neighborX, newBombCount);
                 stateQueue.push(next);
             }
         }
     }
+}
+
+std::string Map::reconstructPath(int goalY, int goalX, int goalBombs, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent, Point src)
+{
+    std::string path = "";
+    int row = goalY;
+    int col = goalX;
+    int bombs = goalBombs;
+
+    while (!(row == src.lat && col == src.lng)) {
+        std::tuple<int,int,int> current = std::make_tuple(row, col, bombs);
+        auto iterator = parent.find(current);
+        if (iterator == parent.end()) { // if path doesnt exist
+            break;
+        }
+        else {
+            char move = iterator->second.second;
+            path = move + path;
+
+            std::tuple<int,int,int> prev = iterator->second.first;
+            row = std::get<0>(prev);
+            col = std::get<1>(prev);
+            bombs = std::get<2>(prev);
+        }
+
+    }
+    return path;
 }
 
 bool Map::isWalkable(Node cell) {

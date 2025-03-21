@@ -11,6 +11,7 @@
 #include "Node.h"
 #include <set>
 #include <cstdlib>
+#include <unordered_map>
 
 static const int dr[] = {-1, 1, 0, 0};
 static const int dc[] = {0, 0, 1, -1};
@@ -23,13 +24,11 @@ class Map {
         int lat;
         int lng;
         int bombs;
-        std::string route;
 
-        SearchState(int y, int x, int b, const std::string &r) {
+        SearchState(int y, int x, int b) {
             lat = y;
             lng = x;
             bombs = b;
-            route = r;
         }
 
     };
@@ -66,8 +65,7 @@ public:
 
     Point fin;
 
-    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &pq, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited);
-
+    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent);
     bool CheckStartPoint(Point start);
     bool CheckEndPoint(Point end);
 
@@ -76,6 +74,7 @@ public:
     private:
         bool isWalkable(Node cell);
         void bombingSim(Node boulder, UnionFind& thisUF);
+        std::string reconstructPath(int goalY, int goalX, int goalBombs, std::map<std::tuple<int,int,int>, std::pair<std::tuple<int,int,int>, char>> &parent, Point src);
 };
 
 #endif
