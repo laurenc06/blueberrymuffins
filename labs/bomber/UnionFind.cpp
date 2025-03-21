@@ -134,20 +134,29 @@ bool UnionFind::shouldBomb(Node current, Node boulder, Node end) {
     return false;
 }
 
-void UnionFind::assignBombs(Node** grid)
+void UnionFind::assignBombs(const Node** grid)
 {
     for(int i=0; i<rows; i++)
     {
         for(int j=0; j<cols; j++)
         {
-            if(grid[i][j].type == '*')
+            Node current = grid[i][j];
+            if(isWalkable(current))
             {
-                if(numBombs[getIndex(i,j)])
-                    numBombs[getIndex(i,j)] = numBombs[getIndex(i,j)]++;
-                else
-                    numBombs[getIndex(i,j)] = 1;
+                if(current.type == '*')
+                {
+                    numBombs[find(getIndex(current))]++;
+                    //std::cout << "current num bombs at " << find(getIndex(current)) << " is " << numBombs[getIndex(current)] << std::endl;
+                }
             }
         }
 
     }
+    /*
+    std::cout << "numBombs map:" << std::endl;
+    for(const auto& pair: numBombs)
+    {
+        std::cout << pair.first << " " << pair.second << std::endl;
+    }
+    */
 }

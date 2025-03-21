@@ -52,7 +52,7 @@ Map::Map(std::istream& stream) {
     uf.connectAll((const Node**)grid);
 
     //updates num of bombs per region
-    uf.assignBombs(grid);
+    uf.assignBombs((const Node**)grid);
 }
 
 std::string Map::route(Point src, Point dst) {
@@ -108,21 +108,17 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
 
         if (cellType == '.' || cellType == '*') {
             canVisit = true;
-            if (cellType == '*') {
+            if (cellType == '*' && !visited.count(std::make_tuple(neighborY, neighborX, newBombCount))) {
                 newBombCount = std::min(newBombCount + 1, maxBouldersCount);
             }
         }
         else if (cellType == '#') {
             if (newBombCount > 0) {
-                std::cout << "num bombs " << newBombCount << std::endl;
                 if (thisUF.shouldBomb(grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng])) { 
-                    std::cout << "should bomb " << neighborY << " " << neighborX << std::endl;
                     canVisit = true;
                     // bombingSim(grid[neighborY][neighborX], thisUF);
                     newBombCount -= 1;
                 }
-                else
-                    std::cout << "should not bomb " << neighborY << " " << neighborX << std::endl;
             }
         }
 
