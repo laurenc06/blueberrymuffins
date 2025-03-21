@@ -109,7 +109,8 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
         if (cellType == '.' || cellType == '*') {
             canVisit = true;
             if (cellType == '*' && !visited.count(std::make_tuple(neighborY, neighborX, newBombCount))) {
-                newBombCount = std::min(newBombCount + 1, maxBouldersCount);
+                newBombCount++;
+                //std::min(newBombCount + 1, maxBouldersCount);
             }
         }
         else if (cellType == '#') {
