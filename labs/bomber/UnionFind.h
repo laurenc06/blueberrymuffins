@@ -8,6 +8,9 @@
 
 using namespace std;
 
+static const int r[] = {-1, 1, 0, 0};
+static const int c[] = {0, 0, 1, -1};
+
 class UnionFind {
     vector<int> parents;
     vector<int> rank;
@@ -23,7 +26,8 @@ class UnionFind {
         int getIndex(int r, int c);
         void unite(int a, int b);
         void connectAll(const Node** grid);
-        bool shouldBomb(Node current, Node boulder, Node end);
+        bool shouldBomb(const Node** grid, Node current, Node boulder, Node end);
+        bool neighborsUF(const Node** grid, Node current, int index);
         bool isWalkable(Node cell);
         void assignBombs(const Node** grid);
 };
