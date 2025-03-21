@@ -103,14 +103,6 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
         //check if bombing leads to region w 1+ bombs
         if(numBombs[find(index)] >= 1)
             return true;
-        /*
-        //if end is a boulder, check if bombing would lead to a region w one of its neighbors
-        if(end.type == '#')
-        {
-            if(neighborsUF(grid,current,index))
-                return true;
-        }
-        */
     }
     if((bCol)-1 >= 0) // west neighbor
     {
@@ -120,14 +112,6 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
         //check if bombing leads to region w 1+ bombs
         if(numBombs[find(index)] >= 1)
             return true;
-        /*
-        //if end is a boulder, check if bombing would lead to a region w one of its neighbors
-        if(end.type == '#')
-        {
-            if(neighborsUF(grid,current,index))
-                return true;
-        }
-        */
     }
     if(bRow - 1 >= 0) // north neighbor
     {
@@ -137,14 +121,6 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
         //check if bombing leads to region w 1+ bombs
         if(numBombs[find(index)] >= 1)
             return true;
-        /*
-        //if end is a boulder, check if bombing would lead to a region w one of its neighbors
-        if(end.type == '#')
-        {
-            if(neighborsUF(grid,current,index))
-                return true;
-        }
-        */
     }
     if(bRow +1 < rows) // south neighbor
     {
@@ -154,34 +130,9 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
         //check if bombing leads to region w 1+ bombs
         if(numBombs[find(index)] >= 1)
             return true;
-        /*
-        //if end is a boulder, check if bombing would lead to a region w one of its neighbors
-        if(end.type == '#')
-        {
-            if(neighborsUF(grid,current,index))
-                return true;
-        }
-        */
     }
     return false;
 }
-
-/*
-bool UnionFind::neighborsUF(const Node** grid, Node current, int index)
-{
-    for (int d = 0; d < 4; d++) {
-        int neighborY = current.y + r[d];
-        int neighborX = current.x + c[d];
-        Node neighbor = grid[neighborY][neighborX];
-        if(isWalkable(neighbor))
-        {
-            if(find(getIndex(neighbor)) == find(index))
-                return true;
-        }
-    }
-    return false;
-}
-*/
 
 void UnionFind::assignBombs(const Node** grid)
 {
