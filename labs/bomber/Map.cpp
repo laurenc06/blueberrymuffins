@@ -52,7 +52,7 @@ Map::Map(std::istream& stream) {
     uf.connectAll((const Node**)grid);
 
     //updates num of bombs per region
-    uf.numBombs();
+    uf.assignBombs(grid);
 }
 
 std::string Map::route(Point src, Point dst) {
@@ -179,4 +179,3 @@ bool Map::CheckEndPoint(Point end) {
     }
     return true;
 }
-

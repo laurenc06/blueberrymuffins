@@ -100,11 +100,17 @@ bool UnionFind::shouldBomb(Node current, Node boulder, Node end) {
         int index = getIndex(bRow, bCol + 1);
         if(find(index) == find(endIndex))
             return true;
+        //check if bombing leads to region w 1+ bombs
+        if(numBombs[find(index)] >= 1)
+            return true;
     }
     if((bCol)-1 >= 0) // west neighbor
     {
         int index = getIndex(bRow, bCol - 1);
         if(find(index) == find(endIndex))
+            return true;
+        //check if bombing leads to region w 1+ bombs
+        if(numBombs[find(index)] >= 1)
             return true;
     }
     if(bRow - 1 >= 0) // north neighbor
@@ -112,20 +118,36 @@ bool UnionFind::shouldBomb(Node current, Node boulder, Node end) {
         int index = getIndex(bRow -1, bCol);
         if(find(index) == find(endIndex))
             return true;
+        //check if bombing leads to region w 1+ bombs
+        if(numBombs[find(index)] >= 1)
+            return true;
     }
     if(bRow +1 < rows) // south neighbor
     {
         int index = getIndex(bRow +1, bCol);
         if(find(index) == find(endIndex))
             return true;
+        //check if bombing leads to region w 1+ bombs
+        if(numBombs[find(index)] >= 1)
+            return true;
     }
     return false;
 }
 
-void UnionFind::numBombs()
+void UnionFind::assignBombs(Node** grid)
 {
-    for(size_t i=0; i<parents.size(); i++)
+    for(int i=0; i<rows; i++)
     {
-        
+        for(int j=0; j<cols; j++)
+        {
+            if(grid[i][j].type == '*')
+            {
+                if(numBombs[getIndex(i,j)])
+                    numBombs[getIndex(i,j)] = numBombs[getIndex(i,j)]++;
+                else
+                    numBombs[getIndex(i,j)] = 1;
+            }
+        }
+
     }
 }
