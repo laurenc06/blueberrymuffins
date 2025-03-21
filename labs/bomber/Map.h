@@ -9,10 +9,13 @@
 #include "Point.h"
 #include "UnionFind.h"
 #include "Node.h"
+#include <set>
 #include <cstdlib>
+#include <unordered_map>
 
 static const int dr[] = {-1, 1, 0, 0};
 static const int dc[] = {0, 0, 1, -1};
+static const char directions[] = {'n', 's', 'e', 'w'};
 
 class Map {
     // Member Variables
@@ -24,7 +27,7 @@ class Map {
         int bombs;
         std::string route;
 
-        SearchState(int y, int x, int b, const std::string &r) {
+        SearchState(int y, int x, int b, const std::string& r) {
             lat = y;
             lng = x;
             bombs = b;
@@ -57,21 +60,23 @@ public:
     ~Map();
 
     Node** grid;
-    // bool*** visitedStates;
     int columns, rows;
     int maxBombCount=0;
     int maxBouldersCount=0;
 
     UnionFind uf;
 
-    Point fin;
+    // Point fin;
 
-    void neighbors(const SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &pq);
-
+    void neighbors(const SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited);
     bool CheckStartPoint(Point start);
     bool CheckEndPoint(Point end);
 
     std::string route(Point src, Point dst);
-};
+
+    private:
+        bool isWalkable(Node cell);
+        void bombingSim(Node boulder, UnionFind& thisUF); 
+    };
 
 #endif

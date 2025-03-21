@@ -17,7 +17,7 @@ struct Point {
     this->lng = lng;
   }
 
-  Point& operator=(const Point& other) { // explicitly define a copy assignment operator
+  Point& operator=(const Point& other) { // explicitly defined a copy assignment operator
     if (this != &other) {
       this->lat = other.lat;
       this->lng = other.lng;

@@ -10,21 +10,20 @@ using namespace std;
 
 class UnionFind {
     vector<int> parents;
-    vector<bool> visited;
     vector<int> rank;
-    map<int,Node> points;
     int cols; // # of columns
     int rows; // # of rows
 
     public: 
         UnionFind();
-        void setCols(int c);
-        void insert(int x, Node point);
+        UnionFind(int r, int c);
         int find(int x);
-        int findIndex(Node current);
+        int getIndex(Node current);
+        int getIndex(int r, int c);
         void unite(int a, int b);
-        void connectAll();
+        void connectAll(const Node** grid);
         bool shouldBomb(Node current, Node neighbor, Node end);
+        bool isWalkable(Node cell);
 };
 
 #endif

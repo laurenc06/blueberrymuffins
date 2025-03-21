@@ -1,32 +1,25 @@
 #include "UnionFind.h"
 
-UnionFind::UnionFind()
-{
-}
+UnionFind::UnionFind() {}
 
-void UnionFind::setCols(int c)
-{
+UnionFind::UnionFind(int r, int c) {
+    rows = r;
     cols = c;
-    rows = (parents.size())/cols;
-}
+    parents.resize(rows*cols);
+    rank.resize(rows*cols, 0);
 
-void UnionFind::insert(int x, Node point)
-{
-    points[x] = point;
-    parents.push_back(x);
-    rank.push_back(x);
-    visited.push_back(false);
+    for (int i =0; i < rows*cols; i++) {
+        parents[i] = i;
+    }
 }
 
 int UnionFind::find(int x)
 {
-    int numElements = rows*cols;
-    if (x>=0 && x<numElements)
+    if (parents[x] != x)
     {
-        if(parents[x] && parents[x] != x)
-            parents[x] = find(parents[x]);
+        parents[x] = find(parents[x]);
     }
-    return x;
+    return parents[x];
 }
 
 void UnionFind::unite(int a, int b)
@@ -36,9 +29,9 @@ void UnionFind::unite(int a, int b)
     if(aRoot!=bRoot)
     {
         if(rank[aRoot] > rank[bRoot])
-            parents[aRoot] = bRoot;
-        else if(rank[aRoot] < rank[bRoot])
             parents[bRoot] = aRoot;
+        else if(rank[aRoot] < rank[bRoot])
+            parents[aRoot] = bRoot;
         else {
             parents[bRoot] = aRoot;
             rank[aRoot]++;
@@ -46,39 +39,31 @@ void UnionFind::unite(int a, int b)
     }
 }
 
-void UnionFind::connectAll()
+bool UnionFind::isWalkable(Node cell) {
+    return (cell.type == '.' || cell.type == '*');
+}
+
+void UnionFind::connectAll(const Node** grid)
 {
     for(int i=0; i<rows; i++)
     {
         for(int j=0; j<cols; j++)
         {
-            int current = (i*cols) + j;
-            if(!visited[current])
+            
+            Node cell = grid[i][j];
+            if(isWalkable(cell))
             {
-                visited[current] = true;
+                int index = getIndex(grid[i][j]);
+
                 //if in bounds and valid check east
-                if((j+1)<cols && j%cols != (cols-1) && points[j+1].type != '~' && points[j+1].type != '#')
+                if (j + 1 < cols && isWalkable(grid[i][j+1])) 
                 {
-                    unite(current, current+1);
-                    visited[current+1] = true;
-                }
-                //if in bounds and valid check west
-                if((j-1)>=0 && j%cols != 0 && points[j-1].type != '~' && points[j-1].type != '#')
-                {
-                    unite(current, current-1);
-                    visited[current-1] = true;
-                }
-                //if in bounds and valid check north
-                if((i-1)>=0 && points[current-cols].type != '~' && points[current-cols].type != '#')
-                {
-                    unite(current, current-cols);
-                    visited[current-cols] = true;
+                    unite(index, getIndex(grid[i][j+1]));
                 }
                 //if in bounds and valid check south
-                if((i+1)<rows && points[current+cols].type != '~' && points[current+cols].type != '#')
+                if(i + 1 < rows && isWalkable(grid[i+1][j]))
                 {
-                    unite(current, current+cols);
-                    visited[current+cols] = true;
+                    unite(index, getIndex(grid[i+1][j]));
                 }
             }
         }
@@ -86,50 +71,52 @@ void UnionFind::connectAll()
 
 }
 
-//finds the index of the node in map points
-int UnionFind::findIndex(Node current)
+//gets the index of the node in map points
+int UnionFind::getIndex(Node current)
 {
-    for (const auto& point: points)
-    {
-        Node temp = Node(point.second);
-        if(current.type == temp.type && current.y == temp.y && current.x == temp.x)
-        {
-            int key = point.first;
-            return key;
-        }
-    }  
-    return -1;
+    return current.y*cols + current.x;
+}
+
+//gets the index of the node in map points
+int UnionFind::getIndex(int r, int c) {
+    return r*cols + c;
 }
 
 // function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
 // check if bombing it would connect you to destination
-bool UnionFind::shouldBomb(Node current, Node neighbor, Node end) {
-    int currentIndex = findIndex(current);
-    int neighborIndex = findIndex(neighbor);
-    int endIndex = findIndex(end);
-    Node adjacent;
+bool UnionFind::shouldBomb(Node current, Node boulder, Node end) {
+    int currentIndex = getIndex(current);
+    int endIndex = getIndex(end);
+    
     if(find(currentIndex) == find(endIndex)) // first check if theyre in the same region. if so, no need to bomb
         return false;
 
+    int bRow = boulder.y;
+    int bCol = boulder.x;
+
     // since ny, nx will be the boulder's coords, we check if the adjacent traversable cell to it is in same set as destination
-    if((neighborIndex)+1 < cols) // east neighbor
+    if(bCol+1 < cols) // east neighbor
     {
-        if(find(neighborIndex+1) == find(endIndex))
+        int index = getIndex(bRow, bCol + 1);
+        if(find(index) == find(endIndex))
             return true;
     }
-    if((neighborIndex)-1 >= 0) // west neighbor
+    if((bCol)-1 >= 0) // west neighbor
     {
-        if(find(neighborIndex-1) == find(endIndex))
+        int index = getIndex(bRow, bCol - 1);
+        if(find(index) == find(endIndex))
             return true;
     }
-    if((neighborIndex)-cols >= 0) // north neighbor
+    if(bRow - 1 >= 0) // north neighbor
     {
-        if(find(neighborIndex-cols) == find(endIndex))
+        int index = getIndex(bRow -1, bCol);
+        if(find(index) == find(endIndex))
             return true;
     }
-    if((neighborIndex)+cols < rows) // south neighbor
+    if(bRow +1 < rows) // south neighbor
     {
-        if(find(neighborIndex+cols) == find(endIndex))
+        int index = getIndex(bRow +1, bCol);
+        if(find(index) == find(endIndex))
             return true;
     }
     return false;
