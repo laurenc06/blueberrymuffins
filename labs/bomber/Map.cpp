@@ -114,7 +114,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
         }
         else if (cellType == '#') {
             if (newBombCount > 0) {
-                std::cout << "num of bombs: " << newBombCount << std::endl;
+                //std::cout << "num of bombs: " << newBombCount << std::endl;
                 int neighborDist = abs(dst.lat-neighborY) + abs(dst.lng-neighborX);
                 int currentDist = abs(dst.lat-current.lat) + abs(dst.lng-current.lng);
                 if(neighborY == dst.lat && neighborX == dst.lng) //if neighbor is the destination
@@ -124,7 +124,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
                 }
                 else if (thisUF.shouldBomb((const Node**)grid, grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng]) || neighborDist<currentDist) { 
                     canVisit = true;
-                    std::cout << "should bomb " << neighborY << " " << neighborX << std::endl;
+                    //std::cout << "should bomb " << neighborY << " " << neighborX << std::endl;
                     // bombingSim(grid[neighborY][neighborX], thisUF);
                     newBombCount--;   
                     grid[neighborY][neighborX].type = '.';
