@@ -136,7 +136,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::priority_
                     newBombCount -= 1;
                 }
                 //else
-                    //std::cout << "should NOT bomb " << current.lat << " " << current.lng << std::endl;
+                    //std::cout << "should NOT bomb " << neighborY << " " << neighborX << std::endl;
             }
         }
         else if (cellType == '~') {
