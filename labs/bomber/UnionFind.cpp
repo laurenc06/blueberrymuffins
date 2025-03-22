@@ -87,35 +87,42 @@ int UnionFind::getIndex(int r, int c) {
 bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs) {
     if (bombs <= 0) return false;
 
-    int currentIndex = getIndex(current);
     int endIndex = getIndex(end);
+    int maxDepth = bombs; // only allow paths that use up to 'bombs' bombs
 
-    if (find(currentIndex) == find(endIndex)) return false;
+    std::queue<std::pair<Node, int>> q;
+    std::set<int> visited;
+    int dr[] = {-1, 1, 0, 0};
+    int dc[] = {0, 0, 1, -1};
 
-    int bRow = boulder.y;
-    int bCol = boulder.x;
+    q.push({boulder, bombs});
+    visited.insert(getIndex(boulder));
+    
+    while (!q.empty()) {
+        auto [node, remainingBombs] = q.front();
+        q.pop();
 
-    // Check all 4 neighbors of the boulder
-    const int dr[] = {-1, 1, 0, 0};
-    const int dc[] = {0, 0, -1, 1};
+        int index = getIndex(node);
+        for (int i = 0; i < 4; i++) {
+            int ny = node.y + dr[i];
+            int nx = node.x + dc[i];
 
-    for (int i = 0; i < 4; i++) {
-        int ny = bRow + dr[i];
-        int nx = bCol + dc[i];
+            if (ny < 0 || ny >= rows || nx < 0 || nx >= cols) continue;
 
-        if (ny < 0 || ny >= rows || nx < 0 || nx >= cols) continue;
+            Node neighbor = grid[ny][nx];
 
-        Node neighbor = grid[ny][nx];
-        if (!isWalkable(neighbor)) continue;
+            if(visited.count(getIndex(neighbor))) continue;
+            visited.insert(getIndex(neighbor));
 
-        int neighborIndex = getIndex(neighbor);
-        int neighborRegion = find(neighborIndex);
-        int endRegion = find(endIndex);
-
-        if (neighborRegion == endRegion) return true;
-        if (numBombs[neighborRegion] > 0) return true;
+            if (isWalkable(neighbor)) {
+                if (find(getIndex(neighbor)) == find(endIndex)) return true;
+                if (numBombs[find(getIndex(neighbor))] > 0) return true;
+            }
+            else if (neighbor.type == '#' && remainingBombs > 1) {
+                q.push({neighbor,remainingBombs -1});
+            }
+        }
     }
-
     return false;
 }
 
