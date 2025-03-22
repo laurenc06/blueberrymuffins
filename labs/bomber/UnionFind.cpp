@@ -102,7 +102,6 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
         auto [node, remainingBombs] = q.front();
         q.pop();
 
-        int index = getIndex(node);
         for (int i = 0; i < 4; i++) {
             int ny = node.y + dr[i];
             int nx = node.x + dc[i];
