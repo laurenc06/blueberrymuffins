@@ -45,15 +45,18 @@ class Map {
 
     struct CompareStates {
         SearchState destination;
+        int maxBouldersCount;
     
-        CompareStates(const SearchState &fin) : destination(fin) {};
+        CompareStates(const SearchState &fin, int maxBoulders) : destination(fin), maxBouldersCount(maxBoulders) {};
 
         int distance(const SearchState &current) const { 
             int distance;
             int yDiff = std::abs(destination.lat-current.lat);
             int xDiff = std::abs(destination.lng-current.lng);
             distance = yDiff+xDiff;
-            return distance;
+            int bombPenalty = std::max(0, maxBouldersCount - current.bombs);
+
+            return distance + bombPenalty*8;
         }
 
         bool operator()(const SearchState &a, const SearchState &b) const {

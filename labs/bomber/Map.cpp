@@ -71,7 +71,7 @@ std::string Map::route(Point src, Point dst) {
     int initialBombCount = 0;
     
     std::set<std::tuple<int, int, int>> visited;
-    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> stateQueue(CompareStates(SearchState(dst.lat, dst.lng, 0, "", {}, {}, 0)));
+    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> stateQueue(CompareStates(SearchState(dst.lat, dst.lng, 0, "", {}, {}, 0), maxBouldersCount));
 
     std::set<int> initialBombs;
     std::set<int> bombedBoulders;
