@@ -94,6 +94,7 @@ std::string Map::route(Point src, Point dst) {
 }
 
 void Map::neighbors(const SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
+    cout << "Current bombs for " << current.lat << " " << current.lng << ": " << current.bombs << endl;
     for (int d = 0; d < 4; d++) {
         int neighborY = current.lat + dr[d];
         int neighborX = current.lng + dc[d];
@@ -108,7 +109,7 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
 
         if (cellType == '.' || cellType == '*') {
             canVisit = true;
-            if (cellType == '*' && !visited.count(std::make_tuple(neighborY, neighborX, newBombCount))) {
+            if (cellType == '*') { //&& !visited.count(std::make_tuple(neighborY, neighborX, newBombCount))
                 newBombCount++;
                 //std::min(newBombCount + 1, maxBouldersCount);
             }
