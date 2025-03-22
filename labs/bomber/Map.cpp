@@ -114,10 +114,10 @@ void Map::neighbors(SearchState &current, const Point &dst, std::queue<SearchSta
 
         if (cellType == '.' || cellType == '*') {
             canVisit = true;
-            int bombIndex = neighborY*columns + neighborX;
+            int bombIndex = current.lat*columns + current.lng;
             if (cellType == '*' && !visited.count(std::make_tuple(neighborY, neighborX, newBombCount)) && !current.pickedUpBombs.count(bombIndex)) {
                 newBombCount = std::min(newBombCount + 1, maxBouldersCount);
-                current.pickedUpBombs[bombIndex] = Point(neighborY, neighborX);
+                current.pickedUpBombs[bombIndex] = Point(current.lat, current.lng);
             }
         }
         else if (cellType == '#') {
