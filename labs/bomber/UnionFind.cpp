@@ -88,7 +88,7 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
     if (bombs <= 0) return false;
 
     int endIndex = getIndex(end);
-    int maxDepth = bombs; // only allow paths that use up to 'bombs' bombs
+    // only allow paths that use up to 'bombs' bombs
 
     std::queue<std::pair<Node, int>> q;
     std::set<int> visited;
