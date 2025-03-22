@@ -98,38 +98,46 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
     if(bCol+1 < cols) // east neighbor
     {
         int index = getIndex(bRow, bCol + 1);
-        if(find(index) == find(endIndex))
-            return true;
-        //check if bombing leads to region w 1+ bombs
-        if(numBombs[find(index)] >= 1)
-            return true;
+        if(index!=currentIndex) {
+            if(find(index) == find(endIndex))
+                return true;
+            //check if bombing leads to region w 1+ bombs
+            if(numBombs[find(index)] >= 1)
+                return true;
+        }
     }
     if((bCol)-1 >= 0) // west neighbor
     {
         int index = getIndex(bRow, bCol - 1);
-        if(find(index) == find(endIndex))
-            return true;
-        //check if bombing leads to region w 1+ bombs
-        if(numBombs[find(index)] >= 1)
-            return true;
+        if(index!=currentIndex) {
+            if(find(index) == find(endIndex))
+                return true;
+            //check if bombing leads to region w 1+ bombs
+            if(numBombs[find(index)] >= 1)
+                return true;
+        }
     }
     if(bRow - 1 >= 0) // north neighbor
     {
         int index = getIndex(bRow -1, bCol);
-        if(find(index) == find(endIndex))
-            return true;
-        //check if bombing leads to region w 1+ bombs
-        if(numBombs[find(index)] >= 1)
-            return true;
+        if(index!=currentIndex) {
+            if(find(index) == find(endIndex))
+                return true;
+            //check if bombing leads to region w 1+ bombs
+            if(numBombs[find(index)] >= 1)
+                return true;
+        }
     }
     if(bRow +1 < rows) // south neighbor
     {
         int index = getIndex(bRow +1, bCol);
-        if(find(index) == find(endIndex))
-            return true;
-        //check if bombing leads to region w 1+ bombs
-        if(numBombs[find(index)] >= 1)
-            return true;
+        if(index!=currentIndex) {
+            if(find(index) == find(endIndex))
+                return true;
+            //check if bombing leads to region w 1+ bombs
+            if(numBombs[find(index)] >= 1)
+                return true;
+        }
     }
     return false;
 }

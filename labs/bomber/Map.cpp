@@ -77,11 +77,12 @@ std::string Map::route(Point src, Point dst) {
     UnionFind thisUF = uf;
 
     std::map<int,Point> initialBombs;
+    std::map<int,Point> bombedBoulders;
     if (grid[src.lat][src.lng].type == '*') {
         initialBombCount = 1;
         initialBombs[src.lat*columns + src.lng] = Point(src);
     }
-    SearchState initialState(src.lat, src.lng, initialBombCount,"",initialBombs);
+    SearchState initialState(src.lat, src.lng, initialBombCount,"",initialBombs, bombedBoulders);
 
     stateQueue.push(initialState);
     
@@ -99,7 +100,7 @@ std::string Map::route(Point src, Point dst) {
     throw RouteError(src, dst);
 }
 
-void Map::neighbors(const SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
+void Map::neighbors(SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
     //cout << "Current bombs for " << current.lat << " " << current.lng << ": " << current.bombs << endl;
     for (int d = 0; d < 4; d++) {
         int neighborY = current.lat + dr[d];
@@ -116,23 +117,26 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
         if (cellType == '.' || cellType == '*') {
             canVisit = true;
             if (cellType == '*') { //&& !visited.count(std::make_tuple(neighborY, neighborX, newBombCount))
-                newBombCount++;
+                if(!current.pickedUpBombs.count(neighborY*columns + neighborX)) { //if not alr picked up
+                    current.pickedUpBombs[neighborY*columns + neighborX] = Point(neighborY,neighborX);
+                    newBombCount++;
+                }
                 //std::min(newBombCount + 1, maxBouldersCount);
             }
         }
         else if (cellType == '#') {
-            if (newBombCount > 0) {
+            if(current.bombedBoulders.count(neighborY*columns + neighborX)) //if boulder was already bombed
+            {
+                canVisit = true;
+            }
+            else if (newBombCount > 0) {
                 //std::cout << "num of bombs: " << newBombCount << std::endl;
                 int neighborDist = abs(dst.lat-neighborY) + abs(dst.lng-neighborX);
                 int currentDist = abs(dst.lat-current.lat) + abs(dst.lng-current.lng);
-                if(neighborY == dst.lat && neighborX == dst.lng) //if neighbor is the destination
-                {
+                if (thisUF.shouldBomb((const Node**)grid, grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng]) || neighborDist<currentDist) { 
                     canVisit = true;
-                    newBombCount--;
-                }
-                else if (thisUF.shouldBomb((const Node**)grid, grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng]) || neighborDist<currentDist) { 
-                    canVisit = true;
-                    //std::cout << "should bomb " << neighborY << " " << neighborX << std::endl;
+                    //std::cout << "bombing " << neighborY << " " << neighborX << std::endl;
+                    current.bombedBoulders[neighborY*columns + neighborX] = Point(neighborY, neighborX);
                     //bombingSim(grid[neighborY][neighborX], thisUF);
                     newBombCount--;   
                 }
@@ -143,7 +147,8 @@ void Map::neighbors(const SearchState &current, const Point &dst, std::queue<Sea
             auto neighborState = std::make_tuple(neighborY, neighborX, newBombCount);
             if (!visited.count(neighborState)) {
                 visited.insert(neighborState);
-                SearchState next(neighborY, neighborX, newBombCount, current.route+directions[d],current.pickedUpBombs);
+                SearchState next(neighborY, neighborX, newBombCount, current.route+directions[d],current.pickedUpBombs,current.bombedBoulders);
+                //std::cout << "current route: " << current.route << directions[d] << std::endl;
                 stateQueue.push(next);
             }
         }
