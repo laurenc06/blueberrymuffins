@@ -85,7 +85,7 @@ int UnionFind::getIndex(int r, int c) {
 // function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
 // check if bombing it would connect you to destination
 // rewritten to get rid of the recursion problem
-/* bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs) {
+bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs) {
     if (bombs <= 0) return false;
 
     int endIndex = getIndex(end);
@@ -124,53 +124,7 @@ int UnionFind::getIndex(int r, int c) {
         }
     }
     return false;
-} */
-
-bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs) {
-    if (bombs <=0) return false;
-    return boundedCheck(grid,boulder,end,bombs-1);
-}
-
-bool UnionFind::boundedCheck(const Node** grid, Node start, Node end, int bombsLeft, int maxDepth) {
-    std::queue<std::tuple<int,int,int>> q;
-    std::set<std::tuple<int,int>> visited;
-
-    q.push({start.y, start.x, 0});
-    visited.insert({start.y, start.x});
-
-    int dr[] = {-1, 1, 0, 0};
-    int dc[] = {0, 0, 1, -1};
-
-    while (!q.empty()) {
-        auto [y, x, depth] = q.front();
-        q.pop();
-
-        int index = getIndex(y,x);
-        if (find(index) == find(getIndex(end))) { return true; }
-        if (depth >= maxDepth || bombsLeft <= 0) {continue;}
-
-        for (int d = 0; d < 4; ++d) {
-            int ny = y + dr[d];
-            int nx = x + dc[d];
-
-            if (ny < 0 || ny >= rows || nx < 0 || nx >= cols) {continue;}
-            if (visited.count({ny,nx})) continue;
-
-            char type = grid[ny][nx].type;
-            if (isWalkable(grid[ny][nx])) {
-                q.push({ny,nx,depth});
-                visited.insert({ny,nx});
-            }
-            else if (type == '#' && bombsLeft > 0) {
-                q.push({ny,nx,depth+1});
-                visited.insert({ny,nx});
-                bombsLeft --;
-            }
-
-        }
-    }
-    return false;
-}
+} 
 
 void UnionFind::assignBombs(const Node** grid)
 {
@@ -198,3 +152,4 @@ void UnionFind::assignBombs(const Node** grid)
     }
     */
 }
+
