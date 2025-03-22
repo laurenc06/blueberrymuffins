@@ -31,6 +31,7 @@ class UnionFind {
         bool shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs);
         bool isWalkable(Node cell);
         void assignBombs(const Node** grid);
+        bool boundedCheck(const Node** grid, Node start, Node end, int bombsLeft, int maxDepth = 7);
 };
 
 #endif
