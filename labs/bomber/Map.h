@@ -26,12 +26,14 @@ class Map {
         int lng;
         int bombs;
         std::string route;
+        std::map<int,Point> pickedUpBombs;
 
-        SearchState(int y, int x, int b, const std::string& r) {
+        SearchState(int y, int x, int b, const std::string& r, std::map<int,Point> bombsPU) {
             lat = y;
             lng = x;
             bombs = b;
             route = r;
+            pickedUpBombs = bombsPU;
         }
 
     };
@@ -63,6 +65,7 @@ public:
     int columns, rows;
     int maxBombCount=0;
     int maxBouldersCount=0;
+    map<int,Node> allBombs;
 
     UnionFind uf;
 
