@@ -85,74 +85,40 @@ int UnionFind::getIndex(int r, int c) {
 // function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
 // check if bombing it would connect you to destination
 bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs) {
+    if (bombs <= 0) return false;
+
     int currentIndex = getIndex(current);
     int endIndex = getIndex(end);
-    
-    if(find(currentIndex) == find(endIndex)) // first check if theyre in the same region. if so, no need to bomb
-        return false;
+
+    if (find(currentIndex) == find(endIndex)) return false;
 
     int bRow = boulder.y;
     int bCol = boulder.x;
 
-    // since ny, nx will be the boulder's coords, we check if the adjacent traversable cell to it is in same set as destination
-    if(bCol+1 < cols) // east neighbor
-    {
-        int index = getIndex(bRow, bCol + 1);
-        if(index!=currentIndex) {
-            if(find(index) == find(endIndex))
-                return true;
-            //check if bombing leads to region w 1+ bombs
-            if(numBombs[find(index)] >= 1)
-                return true;
-        }
-        //loop to check if its neighbors are # and can be bombed
-        while(bombs>0 || boulder.type != '#')
-            return shouldBomb(grid, grid[bRow][bCol+1], grid[bRow][bCol+1], end, bombs-1);
+    // Check all 4 neighbors of the boulder
+    const int dr[] = {-1, 1, 0, 0};
+    const int dc[] = {0, 0, -1, 1};
+
+    for (int i = 0; i < 4; i++) {
+        int ny = bRow + dr[i];
+        int nx = bCol + dc[i];
+
+        if (ny < 0 || ny >= rows || nx < 0 || nx >= cols) continue;
+
+        Node neighbor = grid[ny][nx];
+        if (!isWalkable(neighbor)) continue;
+
+        int neighborIndex = getIndex(neighbor);
+        int neighborRegion = find(neighborIndex);
+        int endRegion = find(endIndex);
+
+        if (neighborRegion == endRegion) return true;
+        if (numBombs[neighborRegion] > 0) return true;
     }
-    if((bCol)-1 >= 0) // west neighbor
-    {
-        int index = getIndex(bRow, bCol - 1);
-        if(index!=currentIndex) {
-            if(find(index) == find(endIndex))
-                return true;
-            //check if bombing leads to region w 1+ bombs
-            if(numBombs[find(index)] >= 1)
-                return true;
-        }
-        //loop to check if its neighbors are # and can be bombed
-        while(bombs>0 || boulder.type != '#')
-            return shouldBomb(grid, grid[bRow][bCol-1], grid[bRow][bCol-1], end, bombs-1);
-    }
-    if(bRow - 1 >= 0) // north neighbor
-    {
-        int index = getIndex(bRow -1, bCol);
-        if(index!=currentIndex) {
-            if(find(index) == find(endIndex))
-                return true;
-            //check if bombing leads to region w 1+ bombs
-            if(numBombs[find(index)] >= 1)
-                return true;
-        }
-        //loop to check if its neighbors are # and can be bombed
-        while(bombs>0 || boulder.type != '#')
-            return shouldBomb(grid, grid[bRow-1][bCol], grid[bRow-1][bCol], end, bombs-1);
-    }
-    if(bRow +1 < rows) // south neighbor
-    {
-        int index = getIndex(bRow +1, bCol);
-        if(index!=currentIndex) {
-            if(find(index) == find(endIndex))
-                return true;
-            //check if bombing leads to region w 1+ bombs
-            if(numBombs[find(index)] >= 1)
-                return true;
-        }
-        //loop to check if its neighbors are # and can be bombed
-        while(bombs>0 || boulder.type != '#')
-            return shouldBomb(grid, grid[bRow+1][bCol], grid[bRow+1][bCol], end, bombs-1);
-    }
+
     return false;
 }
+
 
 void UnionFind::assignBombs(const Node** grid)
 {

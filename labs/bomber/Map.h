@@ -12,6 +12,7 @@
 #include <set>
 #include <cstdlib>
 #include <unordered_map>
+#include <unordered_set>
 
 static const int dr[] = {-1, 1, 0, 0};
 static const int dc[] = {0, 0, 1, -1};
