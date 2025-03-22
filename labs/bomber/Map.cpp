@@ -117,7 +117,7 @@ void Map::neighbors(SearchState &current, const Point &dst, std::priority_queue<
             canVisit = true;
             if (cellType == '*') { //&& !visited.count(std::make_tuple(neighborY, neighborX, newBombCount))
                 int bombID = neighborY*columns + neighborX;
-                if(!current.pickedUpBombs.count(bombID)) { //if not alr picked up
+                if(!newUsedBombs.count(bombID)) { //if not alr picked up
                     newUsedBombs.insert(bombID);
                     newBombCount++;
                 }
