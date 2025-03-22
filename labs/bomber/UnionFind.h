@@ -26,7 +26,7 @@ class UnionFind {
         int getIndex(int r, int c);
         void unite(int a, int b);
         void connectAll(const Node** grid);
-        bool shouldBomb(const Node** grid, Node current, Node boulder, Node end);
+        bool shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs);
         bool isWalkable(Node cell);
         void assignBombs(const Node** grid);
 };

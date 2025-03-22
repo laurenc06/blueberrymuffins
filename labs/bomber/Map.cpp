@@ -72,36 +72,34 @@ std::string Map::route(Point src, Point dst) {
     int initialBombCount = 0;
     
     std::set<std::tuple<int, int, int>> visited;
-    std::queue<SearchState> stateQueue;
+    std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> stateQueue(CompareStates(SearchState(dst.lat, dst.lng, 0, "", {}, {}, 0)));
 
-    UnionFind thisUF = uf;
-
-    std::map<int,Point> initialBombs;
-    std::map<int,Point> bombedBoulders;
+    std::set<int> initialBombs;
+    std::set<int> bombedBoulders;
     if (grid[src.lat][src.lng].type == '*') {
         initialBombCount = 1;
-        initialBombs[src.lat*columns + src.lng] = Point(src);
+        initialBombs.insert(src.lat*columns + src.lng);
     }
-    SearchState initialState(src.lat, src.lng, initialBombCount,"",initialBombs, bombedBoulders);
+    SearchState initialState(src.lat, src.lng, initialBombCount,"",initialBombs, bombedBoulders, 0);
 
     stateQueue.push(initialState);
     
     visited.insert(std::make_tuple(src.lat, src.lng, initialBombCount));
 
     while (!stateQueue.empty()) {
-        SearchState current = stateQueue.front();
+        SearchState current = stateQueue.top();
         stateQueue.pop();
 
         if (current.lat == dst.lat && current.lng == dst.lng) {
             return current.route;
         }
-        neighbors(current, dst, stateQueue, thisUF, visited);
+        neighbors(current, dst, stateQueue, uf, visited);
     }
     throw RouteError(src, dst);
 }
 
-void Map::neighbors(SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
-    //cout << "Current bombs for " << current.lat << " " << current.lng << ": " << current.bombs << endl;
+void Map::neighbors(SearchState &current, const Point &dst, std::priority_queue<SearchState,  std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited) {
+    // cout << "Current bombs for " << current.lat << " " << current.lng << ": " << current.bombs << endl;
     for (int d = 0; d < 4; d++) {
         int neighborY = current.lat + dr[d];
         int neighborX = current.lng + dc[d];
@@ -113,12 +111,15 @@ void Map::neighbors(SearchState &current, const Point &dst, std::queue<SearchSta
         char cellType = grid[neighborY][neighborX].type;
         int newBombCount = current.bombs;
         bool canVisit = false;
+        std::set<int> newUsedBombs = current.pickedUpBombs;
+        std::set<int> newBombedBoulders = current.bombedBoulders;
 
         if (cellType == '.' || cellType == '*') {
             canVisit = true;
             if (cellType == '*') { //&& !visited.count(std::make_tuple(neighborY, neighborX, newBombCount))
-                if(!current.pickedUpBombs.count(neighborY*columns + neighborX)) { //if not alr picked up
-                    current.pickedUpBombs[neighborY*columns + neighborX] = Point(neighborY,neighborX);
+                int bombID = neighborY*columns + neighborX;
+                if(!current.pickedUpBombs.count(bombID)) { //if not alr picked up
+                    newUsedBombs.insert(bombID);
                     newBombCount++;
                 }
                 //std::min(newBombCount + 1, maxBouldersCount);
@@ -133,10 +134,10 @@ void Map::neighbors(SearchState &current, const Point &dst, std::queue<SearchSta
                 //std::cout << "num of bombs: " << newBombCount << std::endl;
                 int neighborDist = abs(dst.lat-neighborY) + abs(dst.lng-neighborX);
                 int currentDist = abs(dst.lat-current.lat) + abs(dst.lng-current.lng);
-                if (thisUF.shouldBomb((const Node**)grid, grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng]) || neighborDist<currentDist) { 
+                if (thisUF.shouldBomb((const Node**)grid, grid[current.lat][current.lng], grid[neighborY][neighborX], grid[dst.lat][dst.lng], newBombCount) || neighborDist<currentDist) { 
                     canVisit = true;
                     //std::cout << "bombing " << neighborY << " " << neighborX << std::endl;
-                    current.bombedBoulders[neighborY*columns + neighborX] = Point(neighborY, neighborX);
+                    newBombedBoulders.insert(neighborY*columns + neighborX);
                     //bombingSim(grid[neighborY][neighborX], thisUF);
                     newBombCount--;   
                 }
@@ -147,7 +148,8 @@ void Map::neighbors(SearchState &current, const Point &dst, std::queue<SearchSta
             auto neighborState = std::make_tuple(neighborY, neighborX, newBombCount);
             if (!visited.count(neighborState)) {
                 visited.insert(neighborState);
-                SearchState next(neighborY, neighborX, newBombCount, current.route+directions[d],current.pickedUpBombs,current.bombedBoulders);
+                int newCost = current.cost + 1;
+                SearchState next(neighborY, neighborX, newBombCount, current.route+directions[d], newUsedBombs, newBombedBoulders, newCost);
                 //std::cout << "current route: " << current.route << directions[d] << std::endl;
                 stateQueue.push(next);
             }

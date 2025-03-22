@@ -84,7 +84,7 @@ int UnionFind::getIndex(int r, int c) {
 
 // function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
 // check if bombing it would connect you to destination
-bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end) {
+bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs) {
     int currentIndex = getIndex(current);
     int endIndex = getIndex(end);
     
@@ -105,6 +105,9 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
             if(numBombs[find(index)] >= 1)
                 return true;
         }
+        //loop to check if its neighbors are # and can be bombed
+        while(bombs>0 || boulder.type != '#')
+            return shouldBomb(grid, grid[bRow][bCol+1], grid[bRow][bCol+1], end, bombs-1);
     }
     if((bCol)-1 >= 0) // west neighbor
     {
@@ -116,6 +119,9 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
             if(numBombs[find(index)] >= 1)
                 return true;
         }
+        //loop to check if its neighbors are # and can be bombed
+        while(bombs>0 || boulder.type != '#')
+            return shouldBomb(grid, grid[bRow][bCol-1], grid[bRow][bCol-1], end, bombs-1);
     }
     if(bRow - 1 >= 0) // north neighbor
     {
@@ -127,6 +133,9 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
             if(numBombs[find(index)] >= 1)
                 return true;
         }
+        //loop to check if its neighbors are # and can be bombed
+        while(bombs>0 || boulder.type != '#')
+            return shouldBomb(grid, grid[bRow-1][bCol], grid[bRow-1][bCol], end, bombs-1);
     }
     if(bRow +1 < rows) // south neighbor
     {
@@ -138,6 +147,9 @@ bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node e
             if(numBombs[find(index)] >= 1)
                 return true;
         }
+        //loop to check if its neighbors are # and can be bombed
+        while(bombs>0 || boulder.type != '#')
+            return shouldBomb(grid, grid[bRow+1][bCol], grid[bRow+1][bCol], end, bombs-1);
     }
     return false;
 }

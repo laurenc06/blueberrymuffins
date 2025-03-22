@@ -26,16 +26,18 @@ class Map {
         int lng;
         int bombs;
         std::string route;
-        std::map<int,Point> pickedUpBombs;
-        std::map<int,Point> bombedBoulders;
+        std::set<int> pickedUpBombs;
+        std::set<int> bombedBoulders;
+        int cost;
 
-        SearchState(int y, int x, int b, const std::string& r, std::map<int,Point> bombsPU, std::map<int,Point> bouldersBombed) {
+        SearchState(int y, int x, int b, const std::string& r, std::set<int> bombsPU, std::set<int> bouldersBombed, int c) {
             lat = y;
             lng = x;
             bombs = b;
             route = r;
             pickedUpBombs = bombsPU;
             bombedBoulders = bouldersBombed;
+            cost = c;
         }
 
     };
@@ -54,7 +56,7 @@ class Map {
         }
 
         bool operator()(const SearchState &a, const SearchState &b) const {
-            return distance(a) > distance(b);
+            return (distance(a) + a.cost > distance(b) + b.cost);
         }        
     };
 
@@ -73,7 +75,7 @@ public:
 
     // Point fin;
 
-    void neighbors(SearchState &current, const Point &dst, std::queue<SearchState> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited);
+    void neighbors(SearchState &current, const Point &dst, std::priority_queue<SearchState, std::vector<SearchState>, CompareStates> &stateQueue, UnionFind& thisUF, std::set<std::tuple<int,int,int>>& visited);
     bool CheckStartPoint(Point start);
     bool CheckEndPoint(Point end);
 
