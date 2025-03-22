@@ -57,6 +57,9 @@ class Map {
         }
 
         bool operator()(const SearchState &a, const SearchState &b) const {
+            if (distance(a) + a.cost == distance(b) + b.cost) {
+                return a.bombs < b.bombs;
+            }
             return (distance(a) + a.cost > distance(b) + b.cost);
         }        
     };

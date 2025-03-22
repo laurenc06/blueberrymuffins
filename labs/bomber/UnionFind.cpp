@@ -84,6 +84,7 @@ int UnionFind::getIndex(int r, int c) {
 
 // function to check if we should bomb given current cell is at (y, x) and the neighbor is at (ny, nx)
 // check if bombing it would connect you to destination
+// rewritten to get rid of the recursion problem
 bool UnionFind::shouldBomb(const Node** grid, Node current, Node boulder, Node end, int bombs) {
     if (bombs <= 0) return false;
 
