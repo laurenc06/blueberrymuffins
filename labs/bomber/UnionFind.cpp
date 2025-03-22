@@ -136,20 +136,10 @@ void UnionFind::assignBombs(const Node** grid)
             if(isWalkable(current))
             {
                 if(current.type == '*')
-                {
                     numBombs[find(getIndex(current))]++;
-                    //std::cout << "current num bombs at " << find(getIndex(current)) << " is " << numBombs[getIndex(current)] << std::endl;
-                }
             }
         }
 
     }
-    /*
-    std::cout << "numBombs map:" << std::endl;
-    for(const auto& pair: numBombs)
-    {
-        std::cout << pair.first << " " << pair.second << std::endl;
-    }
-    */
 }
 
